@@ -16,7 +16,7 @@ interface Props {
 }
 const { variant = 'dark', navLinks = [], centerLabel, ctaText = 'Fale conosco' } = Astro.props;
 const dark = variant === 'dark';
-const monogram = '/images/monogram.png';
+const monogram = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/images/monogram.png`;
 ---
 <header class:list={['site-header', dark ? 'hdr-dark' : 'hdr-cream']}>
   <div class="wrap hdr-inner">

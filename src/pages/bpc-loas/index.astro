@@ -11,6 +11,7 @@ import Stat from '../../components/Stat.astro';
 import FloatingWhats from '../../components/FloatingWhats.astro';
 import { bpcLoas as d } from '../../data/lps/bpc-loas';
 
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const nav = [
   { href: '#o-que-e', label: 'O que é' },
   { href: '#quem-tem-direito', label: 'Quem tem direito' },
@@ -24,7 +25,7 @@ const nav = [
   <!-- HERO — dark, centrado -->
   <section class="hero">
     <div class="hero-photo">
-      <img class="hero-photo-img" src="/images/hero-bpc-loas.webp" alt="Mãos de uma pessoa idosa amparadas pelas mãos de um familiar" width="864" height="1184" />
+      <img class="hero-photo-img" src={`${base}/images/hero-bpc-loas.webp`} alt="Mãos de uma pessoa idosa amparadas pelas mãos de um familiar" width="864" height="1184" />
       <div class="hero-photo-fade"></div>
     </div>
     <div class="wrap hero-inner">

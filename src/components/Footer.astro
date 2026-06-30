@@ -1,7 +1,7 @@
 ---
 /** Footer escuro compartilhado: marca + disclaimer OAB + identificação. */
 import { site } from '../data/site';
-const monogram = '/images/monogram.png';
+const monogram = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/images/monogram.png`;
 ---
 <footer class="site-footer">
   <div class="wrap foot-inner">

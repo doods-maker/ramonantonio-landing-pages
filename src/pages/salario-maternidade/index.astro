@@ -10,6 +10,7 @@ import FAQ from '../../components/FAQ.astro';
 import Stat from '../../components/Stat.astro';
 import FloatingWhats from '../../components/FloatingWhats.astro';
 import { salarioMaternidade as d } from '../../data/lps/salario-maternidade';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 <LandingLayout data={d}>
   <Header variant="cream" centerLabel="SALÁRIO-MATERNIDADE" />
@@ -17,7 +18,7 @@ import { salarioMaternidade as d } from '../../data/lps/salario-maternidade';
   <!-- HERO — split foto + copy -->
   <div class="hero-split">
     <div class="photo-col">
-      <img class="photo-col-img" src="/images/hero-salario-maternidade.webp" alt="Mãe segurando seu bebê recém-nascido" width="864" height="1184" />
+      <img class="photo-col-img" src={`${base}/images/hero-salario-maternidade.webp`} alt="Mãe segurando seu bebê recém-nascido" width="864" height="1184" />
       <div class="photo-fade"></div>
       <div class="photo-badge">Tubarão · Santa Catarina</div>
     </div>
