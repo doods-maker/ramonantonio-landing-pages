@@ -1,0 +1,108 @@
+---
+/**
+ * Header sticky do design. Duas variantes:
+ *  - dark: fundo escuro translúcido (LP BPC/LOAS), logo claro + nav links.
+ *  - cream: fundo cream translúcido (LP Salário-maternidade), logo escuro + label central.
+ * CTA "Fale conosco" rola até #contato.
+ */
+import Botao from './Botao.astro';
+
+interface NavLink { href: string; label: string; }
+interface Props {
+  variant?: 'dark' | 'cream';
+  navLinks?: NavLink[];
+  centerLabel?: string;
+  ctaText?: string;
+}
+const { variant = 'dark', navLinks = [], centerLabel, ctaText = 'Fale conosco' } = Astro.props;
+const dark = variant === 'dark';
+const monogram = '/images/monogram.png';
+---
+<header class:list={['site-header', dark ? 'hdr-dark' : 'hdr-cream']}>
+  <div class="wrap hdr-inner">
+    <a href="#topo" class="hdr-brand">
+      <img src={monogram} alt="Ramon Antonio Advogados" width="36" height="36" />
+      <span class="hdr-brand-txt">
+        <span class="hdr-brand-name">Ramon Antonio</span>
+        <span class="hdr-brand-sub">Advogados</span>
+      </span>
+    </a>
+
+    {navLinks.length > 0 && (
+      <nav class="hdr-nav">
+        {navLinks.map((l) => <a href={l.href}>{l.label}</a>)}
+      </nav>
+    )}
+
+    {centerLabel && <div class="hdr-center">{centerLabel}</div>}
+
+    <Botao href="#contato" variant={dark ? 'onDark' : 'primary'} size="sm">{ctaText}</Botao>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  .hdr-dark {
+    background: rgba(25, 19, 16, 0.94);
+    border-bottom: 1px solid rgba(237, 224, 200, 0.1);
+  }
+  .hdr-cream {
+    background: rgba(250, 243, 232, 0.93);
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .hdr-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 70px;
+    gap: 16px;
+  }
+  .hdr-brand { display: flex; align-items: center; gap: 10px; }
+  .hdr-brand img { border-radius: 7px; object-fit: cover; }
+  .hdr-brand-txt { line-height: 1.1; }
+  .hdr-brand-name {
+    display: block;
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: 17px;
+  }
+  .hdr-brand-sub {
+    display: block;
+    font-family: var(--font-sans);
+    font-size: 9px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+  }
+  .hdr-dark .hdr-brand-name { color: var(--cream-100); }
+  .hdr-dark .hdr-brand-sub { color: var(--bronze-300); }
+  .hdr-cream .hdr-brand-name { color: var(--bronze-900); }
+  .hdr-cream .hdr-brand-sub { color: var(--bronze-400); }
+
+  .hdr-nav { display: flex; gap: 24px; }
+  .hdr-nav a {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(237, 224, 200, 0.75);
+  }
+
+  .hdr-center {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--bronze-600);
+  }
+
+  @media (max-width: 768px) {
+    .hdr-nav { display: none; }
+    .hdr-center { display: none; }
+  }
+</style>

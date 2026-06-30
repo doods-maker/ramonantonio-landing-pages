@@ -1,0 +1,29 @@
+---
+/** Estatística institucional (valor grande serif + label). */
+interface Props {
+  value: string;
+  label: string;
+}
+const { value, label } = Astro.props;
+---
+<div class="stat">
+  <div class="stat-value">{value}</div>
+  <div class="stat-label">{label}</div>
+</div>
+
+<style>
+  .stat-value {
+    font-family: var(--font-serif);
+    font-weight: 700;
+    font-size: 3rem;
+    line-height: 1;
+    color: var(--bronze-600);
+  }
+  .stat-label {
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    margin-top: 6px;
+    max-width: 16ch;
+  }
+</style>

@@ -1,6 +1,5 @@
 ---
 import type { LandingData } from '../data/types';
-import { site } from '../data/site';
 import '../styles/global.css';
 
 interface Props { data: LandingData }
@@ -21,6 +20,15 @@ const canonical = new URL(`/${data.slug}`, Astro.site).href;
     <meta property="og:title" content={data.seoTitle} />
     <meta property="og:description" content={data.seoDescription} />
     <meta property="og:url" content={canonical} />
+
+    <!-- Fontes do design (Cormorant Garamond + Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
     {pixelId && (
       <script is:inline set:html={`
         !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -32,12 +40,7 @@ const canonical = new URL(`/${data.slug}`, Astro.site).href;
       `} />
     )}
   </head>
-  <body>
-    <main><slot /></main>
-    <footer class="container" style="padding:32px 20px;color:#555;font-size:14px;border-top:1px solid #eee;margin-top:48px;">
-      <p>{site.nomeBanca} — {site.cidade} — {site.oab}</p>
-      <p>Atendimento: {site.regioesAtendidas.join(' · ')}</p>
-      <p><a href="/politica-de-privacidade">Política de privacidade</a></p>
-    </footer>
+  <body id="topo">
+    <slot />
   </body>
 </html>

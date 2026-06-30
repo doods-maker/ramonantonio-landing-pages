@@ -2,6 +2,8 @@ export interface LeadPayload {
   nome: string;
   telefone: string;
   campanha: string;
+  /** Mensagem livre do lead (opcional). */
+  mensagem?: string;
   /** Honeypot anti-bot: deve vir vazio de humanos. */
   website?: string;
 }
@@ -30,7 +32,12 @@ export async function enviarLead(
     const resp = await fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nome: payload.nome.trim(), telefone, campanha: payload.campanha }),
+      body: JSON.stringify({
+        nome: payload.nome.trim(),
+        telefone,
+        campanha: payload.campanha,
+        mensagem: payload.mensagem?.trim() || undefined,
+      }),
     });
     return { ok: resp.ok };
   } catch {

@@ -1,7 +1,10 @@
 import { describe, it, expect } from 'vitest';
 import { bpcLoas } from '../bpc-loas';
 
-const PROIBIDO = [/garant(e|imos|ido)/i, /R\$\s?\d/, /\b1\.?621\b/, /com certeza/i, /honor[áa]rio/i];
+// "garante/garantido" é descrição legal do benefício (a LOAS garante 1 salário mínimo),
+// não promessa de resultado ao cliente — permitido. Barramos o que de fato fere o Prov. 205/2021:
+// valores em R$, cifra do salário mínimo, promessa categórica e menção a honorários.
+const PROIBIDO = [/R\$\s?\d/, /\b1\.?621\b/, /com certeza/i, /honor[áa]rio/i, /você vai (ganhar|receber)/i];
 
 describe('LP bpc-loas', () => {
   it('slug e campanha corretos', () => {

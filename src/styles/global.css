@@ -1,14 +1,127 @@
+/* ============================================================
+   Design system — Ramon Antonio Advogados (handoff bronze/cream)
+   Tokens, base e utilitários compartilhados pelas landing pages.
+   ============================================================ */
+
 :root {
-  --cor-primaria: #0b3d5c;
-  --cor-acento: #1f9d55;
-  --cor-texto: #1a1a1a;
-  --cor-fundo: #ffffff;
-  --cor-fundo-suave: #f4f7f9;
-  --fonte-base: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --raio: 10px;
-  --largura-max: 980px;
+  /* Cores */
+  --bronze-900: #3b2010;
+  --bronze-700: #5c3c22;
+  --bronze-600: #754d2a; /* PRIMARY */
+  --bronze-400: #9e7a52;
+  --bronze-300: #c4a882;
+  --cream-100: #faf3e8;
+  --cream-200: #f5e6cc;
+  --dark-900: #191310;
+  --ink-100: #ede0c8;
+  --text-900: #2a1d12;
+  --text-600: #6b5640;
+  --white: #ffffff;
+
+  /* Aliases semânticos (usados no markup) */
+  --color-primary: var(--bronze-600);
+  --text-primary: var(--text-900);
+  --text-secondary: var(--text-600);
+  --border-soft: color-mix(in srgb, var(--bronze-600) 16%, transparent);
+  --gradient-bronze: linear-gradient(90deg, #754d2a 0%, #c4a882 100%);
+
+  /* Tipografia */
+  --font-serif: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --text-h2: clamp(1.75rem, 3vw, 2.5rem);
+  --text-lead: 1.25rem;
+  --text-base: 1rem;
+  --text-sm: 0.875rem;
+  --text-xs: 0.75rem;
+
+  /* Espaçamento (base 4px) */
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+
+  /* Radii */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-pill: 999px;
+
+  /* Sombras (warm) */
+  --shadow-sm: 0 1px 3px rgba(59, 32, 16, 0.06), 0 1px 2px rgba(59, 32, 16, 0.04);
+  --shadow-md: 0 4px 12px rgba(59, 32, 16, 0.08), 0 2px 4px rgba(59, 32, 16, 0.06);
+  --shadow-lg: 0 12px 28px rgba(59, 32, 16, 0.12), 0 4px 10px rgba(59, 32, 16, 0.08);
 }
-* { box-sizing: border-box; }
+
+*, *::before, *::after { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
-body { margin: 0; font-family: var(--fonte-base); color: var(--cor-texto); background: var(--cor-fundo); line-height: 1.6; }
-.container { max-width: var(--largura-max); margin: 0 auto; padding: 0 20px; }
+body {
+  margin: 0;
+  background: var(--cream-100);
+  font-family: var(--font-sans);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+a { text-decoration: none; color: inherit; }
+img { display: block; max-width: 100%; }
+
+/* Container */
+.wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 clamp(1.5rem, 5vw, 4rem);
+}
+
+/* Eyebrow */
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.eyebrow-tick {
+  width: 24px;
+  height: 2px;
+  background: var(--gradient-bronze);
+  flex-shrink: 0;
+}
+.eyebrow-on-dark { color: var(--bronze-300); }
+
+/* Títulos de seção */
+.section-h2 {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: var(--text-h2);
+  line-height: 1.1;
+  color: var(--bronze-900);
+  margin: 0;
+}
+.section-h2-light { color: var(--cream-100); }
+
+/* Nav */
+nav a { transition: color 140ms cubic-bezier(0.4, 0, 0.2, 1); }
+nav a:hover { color: var(--color-primary) !important; }
+
+/* FAQ accordion (details nativo) */
+details summary::-webkit-details-marker { display: none; }
+details summary::marker { display: none; content: ''; }
+details[open] .faq-ch { transform: rotate(180deg); }
+.faq-ch { transition: transform 220ms cubic-bezier(0.4, 0, 0.2, 1); flex-shrink: 0; }
+
+/* Card de requisito — hover */
+.rc { transition: box-shadow 220ms, transform 220ms cubic-bezier(0.4, 0, 0.2, 1); }
+.rc:hover { box-shadow: var(--shadow-lg); transform: translateY(-3px); }
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .two-col { grid-template-columns: 1fr !important; }
+  .three-col { grid-template-columns: 1fr 1fr !important; }
+  .hero-split { grid-template-columns: 1fr !important; min-height: auto !important; }
+  .hero-split .photo-col { display: none; }
+  .hero-text { padding: 40px 24px !important; }
+}

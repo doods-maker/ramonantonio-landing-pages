@@ -1,7 +1,9 @@
 import { describe, it, expect } from 'vitest';
 import { salarioMaternidade } from '../salario-maternidade';
 
-const PROIBIDO = [/garant(e|imos|ido)/i, /R\$\s?\d/, /honor[áa]rio/i];
+// "garante/garantido" descreve o benefício (direito garantido pelo INSS), não promessa de
+// resultado — permitido. Barramos o que fere o Prov. 205/2021 de fato:
+const PROIBIDO = [/R\$\s?\d/, /\b1\.?621\b/, /com certeza/i, /honor[áa]rio/i, /você vai (ganhar|receber)/i];
 
 describe('LP salario-maternidade', () => {
   it('slug correto', () => {

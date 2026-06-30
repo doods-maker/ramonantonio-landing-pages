@@ -16,7 +16,7 @@ A tabela `public.leads` no Supabase está protegida por **Row Level Security (RL
 
 ### Fluxo
 
-1. Landing page (Astro) coleta dados: `nome`, `telefone`, `campanha`, e um honeypot (`website`).
+1. Landing page (Astro) coleta dados: `nome`, `telefone`, `campanha`, `mensagem` (opcional), e um honeypot (`website`).
 2. Faz `fetch POST` para `https://intranet.ramonantonio.adv.br/api/public/leads`.
 3. O endpoint valida:
    - Nome não vazio.
@@ -26,7 +26,8 @@ A tabela `public.leads` no Supabase está protegida por **Row Level Security (RL
    - `origem: 'meta_ads'` (origem fixa, já que vem da LP).
    - `campanha`: valor recebido (ex: `'bpc-loas'`).
    - `etapa: 'novo'` (estado inicial).
-5. Retorna `HTTP 200 + {"ok": true}` (sucesso) ou `HTTP 400 + {"ok": false}` (validação).
+5. Se houver `mensagem`, grava-a como **nota do lead** na tabela `lead_notas` (`lead_id`, `conteudo`) — assim não é preciso alterar o schema de `leads`. *(Alternativa: adicionar uma coluna `mensagem text` em `leads`; o caminho via `lead_notas` é o recomendado por reusar o que já existe.)*
+6. Retorna `HTTP 200 + {"ok": true}` (sucesso) ou `HTTP 400 + {"ok": false}` (validação).
 
 ---
 
@@ -71,7 +72,7 @@ export function OPTIONS(req: Request) {
 
 export async function POST(req: Request) {
   const headers = corsHeaders(req.headers.get('origin'));
-  let body: { nome?: string; telefone?: string; campanha?: string; website?: string };
+  let body: { nome?: string; telefone?: string; campanha?: string; mensagem?: string; website?: string };
   try {
     body = await req.json();
   } catch {
@@ -84,14 +85,24 @@ export async function POST(req: Request) {
   const nome = body.nome?.trim();
   const telefone = (body.telefone ?? '').replace(/\D/g, '');
   const campanha = body.campanha?.trim() || 'lp';
+  const mensagem = body.mensagem?.trim();
   if (!nome || telefone.length < 12 || telefone.length > 13) {
     return NextResponse.json({ ok: false }, { status: 400, headers });
   }
 
-  const { error } = await supabaseAdmin.from('leads').insert({
-    nome, telefone, origem: 'meta_ads', campanha, etapa: 'novo',
-  });
-  if (error) return NextResponse.json({ ok: false }, { status: 500, headers });
+  // Insere o lead e recupera o id gerado.
+  const { data, error } = await supabaseAdmin
+    .from('leads')
+    .insert({ nome, telefone, origem: 'meta_ads', campanha, etapa: 'novo' })
+    .select('id')
+    .single();
+  if (error || !data) return NextResponse.json({ ok: false }, { status: 500, headers });
+
+  // Mensagem livre do formulário vira uma nota no lead (sem alterar o schema de `leads`).
+  if (mensagem) {
+    await supabaseAdmin.from('lead_notas').insert({ lead_id: data.id, conteudo: mensagem });
+  }
+
   return NextResponse.json({ ok: true }, { status: 200, headers });
 }
 ```
@@ -107,12 +118,19 @@ export async function POST(req: Request) {
 Crie o arquivo `intranet-ramon/app/api/public/leads/route.test.ts`:
 
 ```ts
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // Mock do cliente admin do Supabase (ajustar o caminho ao real da intranet).
-const insert = vi.fn().mockResolvedValue({ error: null });
+// `leads.insert(...).select('id').single()` retorna o id; `lead_notas.insert(...)` grava a nota.
+const leadsInsert = vi.fn().mockReturnValue({
+  select: () => ({ single: () => Promise.resolve({ data: { id: 'lead-1' }, error: null }) }),
+});
+const notasInsert = vi.fn().mockResolvedValue({ error: null });
 vi.mock('@/lib/supabase/admin', () => ({
-  supabaseAdmin: { from: () => ({ insert }) },
+  supabaseAdmin: {
+    from: (table: string) =>
+      table === 'lead_notas' ? { insert: notasInsert } : { insert: leadsInsert },
+  },
 }));
 
 import { POST } from './route';
@@ -126,18 +144,33 @@ function req(body: unknown, origin = 'https://ramonantonio.adv.br') {
 }
 
 describe('POST /api/public/leads', () => {
+  beforeEach(() => {
+    leadsInsert.mockClear();
+    notasInsert.mockClear();
+  });
+
   it('insere lead válido com origem meta_ads', async () => {
     const res = await POST(req({ nome: 'Ana', telefone: '5547999999999', campanha: 'bpc-loas' }));
     expect(res.status).toBe(200);
-    expect(insert).toHaveBeenCalledWith(
+    expect(leadsInsert).toHaveBeenCalledWith(
       expect.objectContaining({ nome: 'Ana', telefone: '5547999999999', origem: 'meta_ads', campanha: 'bpc-loas', etapa: 'novo' }),
     );
   });
+  it('grava a mensagem como nota do lead', async () => {
+    const res = await POST(req({ nome: 'Ana', telefone: '5547999999999', campanha: 'bpc-loas', mensagem: 'Tenho 67 anos e renda baixa.' }));
+    expect(res.status).toBe(200);
+    expect(notasInsert).toHaveBeenCalledWith(
+      expect.objectContaining({ lead_id: 'lead-1', conteudo: 'Tenho 67 anos e renda baixa.' }),
+    );
+  });
+  it('não cria nota quando não há mensagem', async () => {
+    await POST(req({ nome: 'Ana', telefone: '5547999999999', campanha: 'bpc-loas' }));
+    expect(notasInsert).not.toHaveBeenCalled();
+  });
   it('rejeita honeypot preenchido sem inserir', async () => {
-    insert.mockClear();
     const res = await POST(req({ nome: 'Bot', telefone: '5547999999999', campanha: 'x', website: 'spam' }));
     expect(res.status).toBe(200);
-    expect(insert).not.toHaveBeenCalled();
+    expect(leadsInsert).not.toHaveBeenCalled();
   });
   it('rejeita payload sem nome', async () => {
     const res = await POST(req({ telefone: '5547999999999', campanha: 'x' }));
@@ -176,7 +209,7 @@ Depois de fazer deploy do endpoint, teste com:
 curl -i -X POST https://intranet.ramonantonio.adv.br/api/public/leads \
   -H 'Content-Type: application/json' \
   -H 'Origin: https://ramonantonio.adv.br' \
-  -d '{"nome":"Teste","telefone":"5547999999999","campanha":"bpc-loas"}'
+  -d '{"nome":"Teste","telefone":"5547999999999","campanha":"bpc-loas","mensagem":"Mensagem de teste"}'
 ```
 
 ### Resultado esperado
@@ -199,6 +232,7 @@ Access-Control-Allow-Origin: https://ramonantonio.adv.br
    - `etapa: 'novo'`
    - `nome: 'Teste'`
    - `telefone: '5547999999999'`
+4. Abra a tabela `lead_notas` e confirme uma nota com `conteudo: 'Mensagem de teste'` vinculada ao `lead_id` recém-criado.
 
 Se encontrar, o endpoint está funcionando.
 
@@ -211,7 +245,7 @@ Se encontrar, o endpoint está funcionando.
 A landing page (`ramonantonio-site`, neste repositório) apenas **faz fetch para este endpoint**; ela não contém lógica de banco de dados.
 
 Passos após completar a implementação:
-1. Rodar `npx vitest run app/api/public/leads/route.test.ts` (esperado: 3 testes passando).
+1. Rodar `npx vitest run app/api/public/leads/route.test.ts` (esperado: 5 testes passando).
 2. Fazer commit: `git commit -m "feat: endpoint POST /api/public/leads com validação e honeypot"`.
 3. Fazer push para `intranet-ramon`.
 4. Deploy na VPS (ou Vercel, conforme configurado).
