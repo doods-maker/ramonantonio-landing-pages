@@ -1,0 +1,157 @@
+---
+/**
+ * Card "Fale com o escritório" — formulário de contato do design.
+ * Campos: nome, telefone, mensagem. Honeypot anti-bot (website).
+ * Envia para o endpoint da intranet via enviarLead (campanha = slug da LP),
+ * dispara o evento `Lead` do Pixel no sucesso, e exibe feedback.
+ */
+interface Props {
+  campanha: string;
+  cardBg?: 'cream' | 'white';
+}
+const { campanha, cardBg = 'white' } = Astro.props;
+---
+<div class:list={['form-card', cardBg === 'cream' ? 'card-cream' : 'card-white']}>
+  <h3 class="form-title">Fale com o escritório</h3>
+  <p class="form-sub">Envie uma mensagem. Nossa equipe retornará em breve.</p>
+
+  <form data-form-lead data-campanha={campanha} novalidate>
+    <label class="field">
+      <span class="field-label">Nome completo</span>
+      <input type="text" name="nome" placeholder="Seu nome completo" required autocomplete="name" />
+    </label>
+    <label class="field">
+      <span class="field-label">Telefone</span>
+      <input type="tel" name="telefone" placeholder="(48) 9 0000-0000" required autocomplete="tel" />
+    </label>
+    <label class="field">
+      <span class="field-label">Mensagem</span>
+      <textarea name="mensagem" rows="3" placeholder="Descreva brevemente sua situação"></textarea>
+    </label>
+    <!-- honeypot: oculto para humanos -->
+    <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" class="hp" />
+    <button type="submit" class="form-submit">Enviar mensagem</button>
+    <p data-msg class="form-msg" role="status"></p>
+  </form>
+
+  <p class="form-disclaimer">
+    Conteúdo informativo. Não substitui a orientação jurídica individual de um(a) advogado(a).
+  </p>
+</div>
+
+<style>
+  .form-card {
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border-soft);
+    box-shadow: var(--shadow-md);
+    padding: 32px;
+  }
+  .card-cream { background: var(--cream-100); }
+  .card-white { background: var(--white); }
+
+  .form-title {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: 1.6rem;
+    color: var(--bronze-900);
+    margin: 0 0 6px;
+  }
+  .form-sub {
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    margin: 0 0 22px;
+    line-height: 1.5;
+  }
+  form { display: flex; flex-direction: column; gap: 14px; }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field-label {
+    font-family: var(--font-sans);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+  input, textarea {
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    color: var(--text-primary);
+    background: var(--white);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    width: 100%;
+    transition: border-color 180ms, box-shadow 180ms;
+  }
+  .card-white input, .card-white textarea { background: var(--cream-100); }
+  textarea { resize: vertical; min-height: 88px; }
+  input:focus, textarea:focus {
+    outline: none;
+    border-color: var(--bronze-600);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--bronze-600) 14%, transparent);
+  }
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+
+  .form-submit {
+    height: 52px;
+    border: none;
+    border-radius: var(--radius-pill);
+    background: var(--bronze-600);
+    color: var(--cream-100);
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background 220ms, transform 140ms;
+  }
+  .form-submit:hover { background: var(--bronze-700); }
+  .form-submit:active { transform: scale(0.97); }
+  .form-submit:disabled { opacity: 0.6; cursor: default; }
+
+  .form-msg { min-height: 1.2em; margin: 4px 0 0; font-size: var(--text-sm); }
+  .form-msg.ok { color: var(--bronze-600); }
+  .form-msg.erro { color: #b3261e; }
+
+  .form-disclaimer {
+    font-family: var(--font-sans);
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    margin: 14px 0 0;
+    line-height: 1.5;
+    opacity: 0.7;
+  }
+</style>
+
+<script>
+  import { enviarLead } from '../lib/enviarLead';
+  import { trackLead } from '../lib/tracking';
+  const endpoint = import.meta.env.PUBLIC_LEADS_ENDPOINT;
+  document.querySelectorAll('[data-form-lead]').forEach((form) => {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const f = e.currentTarget as HTMLFormElement;
+      const msg = f.querySelector('[data-msg]') as HTMLElement;
+      const btn = f.querySelector('button[type="submit"]') as HTMLButtonElement;
+      const fd = new FormData(f);
+      btn.disabled = true;
+      msg.textContent = 'Enviando…';
+      msg.className = 'form-msg';
+      const res = await enviarLead(endpoint, {
+        nome: String(fd.get('nome') ?? ''),
+        telefone: String(fd.get('telefone') ?? ''),
+        mensagem: String(fd.get('mensagem') ?? ''),
+        campanha: String(f.dataset.campanha ?? ''),
+        website: String(fd.get('website') ?? ''),
+      });
+      if (res.ok) {
+        trackLead();
+        msg.textContent = 'Recebemos seu contato! Em breve falaremos com você.';
+        msg.className = 'form-msg ok';
+        f.reset();
+      } else {
+        msg.textContent = 'Não foi possível enviar. Confira o telefone e tente novamente.';
+        msg.className = 'form-msg erro';
+        btn.disabled = false;
+      }
+    });
+  });
+</script>

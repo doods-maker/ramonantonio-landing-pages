@@ -1,0 +1,50 @@
+---
+/** Footer escuro compartilhado: marca + disclaimer OAB + identificação. */
+import { site } from '../data/site';
+const monogram = '/images/monogram.png';
+---
+<footer class="site-footer">
+  <div class="wrap foot-inner">
+    <div class="foot-brand">
+      <img src={monogram} alt="" width="34" height="34" />
+      <div>
+        <div class="foot-name">{site.nomeBanca}</div>
+        <div class="foot-sub">@ramonantonioadvogados · {site.cidade}</div>
+      </div>
+    </div>
+    <p class="foot-disclaimer">
+      Conteúdo informativo. Não substitui a orientação jurídica individual de um(a) advogado(a).
+    </p>
+    <span class="foot-copy">© 2026 · {site.oab}</span>
+  </div>
+</footer>
+
+<style>
+  .site-footer { background: var(--dark-900); padding: var(--space-6) 0; }
+  .foot-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .foot-brand { display: flex; align-items: center; gap: 10px; }
+  .foot-brand img { border-radius: 7px; object-fit: cover; }
+  .foot-name {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--cream-100);
+  }
+  .foot-sub { font-family: var(--font-sans); font-size: 11px; color: var(--bronze-300); }
+  .foot-disclaimer {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    color: var(--text-secondary);
+    text-align: center;
+    margin: 0;
+    max-width: 48ch;
+    line-height: 1.5;
+  }
+  .foot-copy { font-family: var(--font-sans); font-size: 11px; color: var(--text-secondary); }
+</style>

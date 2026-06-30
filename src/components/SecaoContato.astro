@@ -1,0 +1,112 @@
+---
+/**
+ * Seção "Contato" (#contato) — a porta de conversão da LP.
+ * Substitui o bloco "Canais oficiais do INSS" do handoff pela estratégia da banca:
+ *  - Coluna esquerda: WhatsApp (atrito zero) + "Como funciona" (3 passos).
+ *  - Coluna direita: formulário → CRM da intranet.
+ * `tone` casa o fundo da seção com o fundo dos cards (igual ao handoff):
+ *  - 'on-white': seção branca, cards cream, form cream.
+ *  - 'on-cream': seção cream, cards brancos, form branco.
+ */
+import Eyebrow from './Eyebrow.astro';
+import BotaoWhats from './BotaoWhats.astro';
+import FormContato from './FormContato.astro';
+import type { PassoComoFunciona } from '../data/types';
+
+interface Props {
+  campanha: string;
+  mensagemWhats: string;
+  passos: PassoComoFunciona[];
+  tone?: 'on-white' | 'on-cream';
+}
+const { campanha, mensagemWhats, passos, tone = 'on-white' } = Astro.props;
+const onWhite = tone === 'on-white';
+const cardBg = onWhite ? 'cream' : 'white';
+---
+<section id="contato" class:list={['contato', onWhite ? 'sec-white' : 'sec-cream']}>
+  <div class="wrap two-col contato-grid">
+    <!-- Esquerda: WhatsApp + como funciona -->
+    <div>
+      <Eyebrow label="ATENDIMENTO" />
+      <h2 class="section-h2 contato-h2">Fale direto com o escritório</h2>
+      <p class="contato-intro">
+        Tire suas dúvidas pelo WhatsApp ou deixe seus dados no formulário — nossa equipe
+        retorna para entender o seu caso e orientar os próximos passos.
+      </p>
+
+      <div class="whats-wrap">
+        <BotaoWhats mensagem={mensagemWhats} texto="Falar no WhatsApp" variant="primary" size="lg" />
+      </div>
+
+      <div class="passos">
+        {passos.map((p, i) => (
+          <div class:list={['passo', cardBg === 'cream' ? 'passo-cream' : 'passo-white']}>
+            <div class="passo-num">{String(i + 1).padStart(2, '0')}</div>
+            <div>
+              <div class="passo-titulo">{p.titulo}</div>
+              <div class="passo-desc">{p.descricao}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Direita: formulário -->
+    <FormContato campanha={campanha} cardBg={cardBg} />
+  </div>
+</section>
+
+<style>
+  .contato { padding: var(--space-9) 0; }
+  .sec-white { background: var(--white); }
+  .sec-cream { background: var(--cream-100); }
+  .contato-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.15fr;
+    gap: var(--space-8);
+  }
+  .contato-h2 { margin: 14px 0; }
+  .contato-intro {
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    line-height: 1.65;
+    color: var(--text-secondary);
+    margin: 0 0 22px;
+  }
+  .whats-wrap { margin-bottom: 26px; }
+
+  .passos { display: flex; flex-direction: column; gap: 10px; }
+  .passo {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 14px;
+    align-items: start;
+    border-radius: var(--radius-md);
+    padding: 14px 18px;
+    border: 1px solid var(--border-soft);
+  }
+  .passo-cream { background: var(--cream-100); }
+  .passo-white { background: var(--white); }
+  .passo-num {
+    font-family: var(--font-serif);
+    font-weight: 700;
+    font-size: 1.4rem;
+    line-height: 1;
+    color: var(--bronze-600);
+    opacity: 0.55;
+    width: 28px;
+  }
+  .passo-titulo {
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  .passo-desc {
+    font-family: var(--font-sans);
+    font-size: var(--text-xs);
+    line-height: 1.5;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+</style>

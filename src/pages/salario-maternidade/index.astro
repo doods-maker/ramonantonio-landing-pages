@@ -1,22 +1,252 @@
 ---
 import LandingLayout from '../../layouts/LandingLayout.astro';
-import Hero from '../../components/Hero.astro';
-import ProvaSocial from '../../components/ProvaSocial.astro';
-import Elegibilidade from '../../components/Elegibilidade.astro';
-import ComoFunciona from '../../components/ComoFunciona.astro';
-import FormLead from '../../components/FormLead.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import Eyebrow from '../../components/Eyebrow.astro';
+import BotaoWhats from '../../components/BotaoWhats.astro';
+import Botao from '../../components/Botao.astro';
+import SecaoContato from '../../components/SecaoContato.astro';
 import FAQ from '../../components/FAQ.astro';
-import CtaFinal from '../../components/CtaFinal.astro';
+import Stat from '../../components/Stat.astro';
 import FloatingWhats from '../../components/FloatingWhats.astro';
 import { salarioMaternidade as d } from '../../data/lps/salario-maternidade';
 ---
 <LandingLayout data={d}>
-  <Hero headline={d.heroHeadline} sub={d.heroSub} mensagemWhats={d.mensagemWhats} />
-  <ProvaSocial />
-  <Elegibilidade titulo={d.elegibilidadeTitulo} sinais={d.elegibilidadeSinais} />
-  <ComoFunciona passos={d.comoFunciona} />
-  <FormLead campanha={d.slug} />
-  <FAQ itens={d.faq} />
-  <CtaFinal titulo={d.ctaFinalTitulo} texto={d.ctaFinalTexto} mensagemWhats={d.mensagemWhats} />
-  <FloatingWhats mensagemWhats={d.mensagemWhats} />
+  <Header variant="cream" centerLabel="SALÁRIO-MATERNIDADE" />
+
+  <!-- HERO — split foto + copy -->
+  <div class="hero-split">
+    <div class="photo-col" aria-hidden="true">
+      <div class="photo-dots"></div>
+      <div class="photo-ph">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" opacity=".55"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"></path></svg>
+        <span>Foto P&amp;B profissional</span>
+      </div>
+      <div class="photo-fade"></div>
+      <div class="photo-badge">Tubarão · Santa Catarina</div>
+    </div>
+    <div class="hero-text">
+      <Eyebrow label={d.heroEyebrow} onDark />
+      <h1 class="hero-h1" set:html={d.heroHeadline}></h1>
+      <p class="hero-sub">{d.heroSub}</p>
+      <div class="hero-ctas">
+        <BotaoWhats mensagem={d.mensagemWhats} texto="Falar no WhatsApp" variant="onDark" size="lg" block />
+        <Botao href="#contato" variant="ghost" size="lg" block>Pedir uma análise</Botao>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTATO (WhatsApp + formulário) -->
+  <SecaoContato campanha={d.slug} mensagemWhats={d.mensagemWhats} passos={d.passos} tone="on-cream" />
+
+  <!-- O QUE É — white, pull quote -->
+  <section id="o-que-e" class="oque">
+    <div class="wrap two-col oque-grid">
+      <div>
+        <Eyebrow label="O BENEFÍCIO" />
+        {d.oQueEQuote && <p class="oque-quote">“{d.oQueEQuote}”</p>}
+      </div>
+      <div class="oque-body">
+        {d.oQueEParagrafos.map((p, i) => (
+          <p class:list={['oque-p', { 'oque-p-lead': i === 0, 'oque-p-note': i === d.oQueEParagrafos.length - 1 }]} set:html={p}></p>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- QUEM TEM DIREITO — cream-200, cards numerados -->
+  <section id="quem-tem-direito" class="req">
+    <div class="wrap">
+      <div class="req-head">
+        <Eyebrow label="REQUISITOS" />
+        <h2 class="section-h2">{d.requisitosTitulo}</h2>
+      </div>
+      <div class="req-list">
+        {d.requisitos.map((r, i) => (
+          <div class:list={['req-card', { 'req-card-dark': r.destaque, rc: !r.destaque }]}>
+            <div class="req-num-wrap">
+              <span class="req-num">{String(i + 1).padStart(2, '0')}</span>
+              <div class="req-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 20c0-4 3.6-6 8-6s8 2 8 6"></path></svg>
+              </div>
+            </div>
+            <div>
+              <h3 class="req-title">{r.titulo}</h3>
+              <p class="req-desc">{r.descricao}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+      {d.requisitosDisclaimer && <p class="req-disc">{d.requisitosDisclaimer}</p>}
+    </div>
+  </section>
+
+  <!-- DOCUMENTOS — white, 3-col -->
+  <section id="documentos" class="docs">
+    <div class="wrap two-col docs-grid">
+      <div>
+        <Eyebrow label="DOCUMENTAÇÃO" />
+        <h2 class="section-h2">{d.documentosTitulo}</h2>
+      </div>
+      <div class="three-col docs-tiles">
+        {d.documentos.map((doc) => (
+          <div class="doc-tile">
+            <div class="doc-ico">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            </div>
+            <div class="doc-title">{doc.titulo}</div>
+            <div class="doc-desc">{doc.descricao}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ — dark dramático -->
+  <FAQ itens={d.faq} titulo={d.faqTitulo} variant="dark" />
+
+  <!-- SOBRE — cream -->
+  <section class="sobre">
+    <div class="wrap two-col sobre-grid">
+      <div>
+        <Eyebrow label="O ESCRITÓRIO" />
+        <h2 class="section-h2 sobre-h2">Ramon Antonio Advogados Associados</h2>
+        <p class="sobre-txt">{d.sobreTexto}</p>
+      </div>
+      <div class="sobre-stats">
+        {d.stats.map((s) => <Stat value={s.value} label={s.label} />)}
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+  <FloatingWhats mensagem={d.mensagemWhats} />
 </LandingLayout>
+
+<style>
+  /* HERO split */
+  .hero-split { display: grid; grid-template-columns: 55fr 45fr; min-height: 600px; }
+  .photo-col {
+    position: relative; overflow: hidden;
+    background: linear-gradient(140deg, #1a100a 0%, #3b2010 35%, #5c3c22 70%, #754d2a 100%);
+  }
+  .photo-dots {
+    position: absolute; inset: 0; opacity: 0.14;
+    background-image: radial-gradient(rgba(245, 230, 204, 0.5) 1px, transparent 1px);
+    background-size: 4px 4px;
+  }
+  .photo-ph {
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 12px; color: var(--bronze-300);
+  }
+  .photo-ph span {
+    font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.15em;
+    text-transform: uppercase; opacity: 0.65;
+  }
+  .photo-fade { position: absolute; inset: 0; background: linear-gradient(to right, transparent 55%, var(--dark-900) 100%); }
+  .photo-badge {
+    position: absolute; bottom: 28px; left: 28px; z-index: 1;
+    font-family: var(--font-sans); font-size: 0.72rem; letter-spacing: 0.12em;
+    color: var(--ink-100); background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(237, 224, 200, 0.2); border-radius: var(--radius-pill);
+    padding: 6px 14px;
+  }
+  .hero-text {
+    background: var(--dark-900); display: flex; flex-direction: column;
+    justify-content: center; padding: 64px 56px;
+  }
+  .hero-h1 {
+    font-family: var(--font-serif); font-weight: 600;
+    font-size: clamp(2.2rem, 3.5vw, 3.2rem); line-height: 1.06; letter-spacing: -0.01em;
+    color: var(--cream-100); margin: 22px 0;
+  }
+  .hero-sub {
+    font-family: var(--font-sans); font-size: 1.05rem; line-height: 1.65;
+    color: var(--ink-100); opacity: 0.82; margin: 0 0 34px;
+  }
+  .hero-ctas { display: flex; flex-direction: column; gap: 10px; }
+
+  /* O QUE É — pull quote */
+  .oque { background: var(--white); padding: var(--space-9) 0; }
+  .oque-grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: var(--space-8); align-items: start; }
+  .oque-quote {
+    font-family: var(--font-serif); font-weight: 600; font-size: 2.5rem; line-height: 1.08;
+    letter-spacing: -0.01em; color: var(--bronze-900); margin: 14px 0 0;
+  }
+  .oque-body { padding-top: 52px; }
+  .oque-p {
+    font-family: var(--font-sans); font-size: var(--text-base); line-height: 1.7;
+    color: var(--text-secondary); margin: 0 0 14px;
+  }
+  .oque-p-lead { font-size: var(--text-lead); color: var(--text-primary); margin-bottom: 18px; }
+  .oque-p-note { font-size: 0.8rem; opacity: 0.75; }
+  .oque-p :global(strong) { color: var(--text-primary); }
+
+  /* REQUISITOS — numerados */
+  .req { background: var(--cream-200); padding: var(--space-9) 0; }
+  .req-head { margin-bottom: 44px; }
+  .req-head :global(.eyebrow) { margin-bottom: 14px; }
+  .req-list { display: flex; flex-direction: column; gap: 12px; }
+  .req-card {
+    display: grid; grid-template-columns: auto 1fr; gap: 22px; align-items: center;
+    background: var(--white); border-radius: var(--radius-lg); border: 1px solid var(--border-soft);
+    box-shadow: var(--shadow-sm); padding: 24px 28px;
+  }
+  .req-card-dark {
+    display: grid; grid-template-columns: auto 1fr; gap: 22px; align-items: center;
+    background: var(--dark-900); border-radius: var(--radius-lg); padding: 24px 28px;
+  }
+  .req-num-wrap { display: flex; align-items: center; gap: 14px; }
+  .req-num {
+    font-family: var(--font-serif); font-weight: 700; font-size: 2.8rem; line-height: 1;
+    color: var(--bronze-900); opacity: 0.1; width: 52px; text-align: right;
+  }
+  .req-card-dark .req-num { opacity: 0.35; }
+  .req-icon {
+    width: 48px; height: 48px; border-radius: 12px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: color-mix(in srgb, var(--bronze-600) 10%, transparent); color: var(--color-primary);
+  }
+  .req-card-dark .req-icon { background: rgba(117, 77, 42, 0.2); color: var(--bronze-300); }
+  .req-title {
+    font-family: var(--font-serif); font-weight: 600; font-size: 1.3rem;
+    color: var(--bronze-900); margin: 0 0 6px;
+  }
+  .req-card-dark .req-title { color: var(--cream-100); }
+  .req-desc {
+    font-family: var(--font-sans); font-size: var(--text-sm); line-height: 1.65;
+    color: var(--text-secondary); margin: 0;
+  }
+  .req-card-dark .req-desc { color: var(--ink-100); opacity: 0.8; }
+  .req-disc {
+    font-family: var(--font-sans); font-size: 0.72rem; color: var(--text-secondary);
+    margin: 20px 0 0; opacity: 0.7;
+  }
+
+  /* DOCUMENTOS — 3 col */
+  .docs { background: var(--white); padding: var(--space-9) 0; }
+  .docs-grid { display: grid; grid-template-columns: 1fr 2fr; gap: var(--space-8); align-items: start; }
+  .docs-tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 0; }
+  .doc-tile { border: 1px solid var(--border-soft); border-radius: var(--radius-md); padding: 18px; }
+  .doc-ico { color: var(--color-primary); margin-bottom: 10px; }
+  .doc-title {
+    font-family: var(--font-sans); font-size: var(--text-sm); font-weight: 600;
+    color: var(--text-primary); margin-bottom: 4px;
+  }
+  .doc-desc { font-family: var(--font-sans); font-size: var(--text-xs); color: var(--text-secondary); line-height: 1.5; }
+
+  /* SOBRE */
+  .sobre { background: var(--cream-100); padding: var(--space-9) 0; }
+  .sobre-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-8); align-items: center; }
+  .sobre-h2 { margin: 14px 0 18px; }
+  .sobre-txt {
+    font-family: var(--font-sans); font-size: var(--text-base); line-height: 1.7;
+    color: var(--text-secondary); margin: 0;
+  }
+  .sobre-stats { display: flex; gap: var(--space-7); }
+
+  @media (max-width: 768px) {
+    .hero-text { padding: 40px 24px; }
+    .oque-body { padding-top: 0; }
+  }
+</style>

@@ -1,8 +1,22 @@
 ---
+/**
+ * Seção FAQ (#faq) com accordion <details> nativo + JSON-LD FAQPage.
+ * Duas variantes do handoff:
+ *  - 'cards': cards brancos individuais sobre fundo cream-200 (BPC/LOAS).
+ *  - 'dark': border-bottom sobre fundo dark-900, summary em serif (Salário-maternidade).
+ */
+import Eyebrow from './Eyebrow.astro';
 import type { FaqItem } from '../data/types';
-interface Props { itens: FaqItem[] }
-const { itens } = Astro.props;
-const jsonLd = {
+
+interface Props {
+  itens: FaqItem[];
+  titulo: string;
+  variant?: 'cards' | 'dark';
+}
+const { itens, titulo, variant = 'cards' } = Astro.props;
+const dark = variant === 'dark';
+// Escapa </script> para não quebrar o bloco JSON-LD embutido.
+const jsonLd = JSON.stringify({
   '@context': 'https://schema.org',
   '@type': 'FAQPage',
   mainEntity: itens.map((i) => ({
@@ -10,22 +24,92 @@ const jsonLd = {
     name: i.pergunta,
     acceptedAnswer: { '@type': 'Answer', text: i.resposta },
   })),
-};
+}).replace(/<\/script/gi, '<\\/script');
+const chevronStroke = dark ? 'var(--bronze-300)' : 'var(--bronze-600)';
 ---
-<section class="faq">
-  <div class="container">
-    <h2>Perguntas frequentes</h2>
-    {itens.map((i) => (
-      <details>
-        <summary>{i.pergunta}</summary>
-        <p>{i.resposta}</p>
-      </details>
-    ))}
+<section id="faq" class:list={['faq', dark ? 'faq-dark' : 'faq-cards']}>
+  <div class="wrap faq-wrap">
+    {dark ? (
+      <Eyebrow label="PERGUNTAS FREQUENTES" onDark />
+    ) : (
+      <div class="faq-head"><Eyebrow label="PERGUNTAS FREQUENTES" centered /></div>
+    )}
+    <h2 class:list={['section-h2', 'faq-title', { 'section-h2-light': dark }]}>{titulo}</h2>
+
+    <div class="faq-list">
+      {itens.map((i) => (
+        <details class="faq-item">
+          <summary class="faq-summary">
+            <span>{i.pergunta}</span>
+            <svg class="faq-ch" width={dark ? 20 : 18} height={dark ? 20 : 18} viewBox="0 0 24 24" fill="none" stroke={chevronStroke} stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg>
+          </summary>
+          <p class="faq-answer">{i.resposta}</p>
+        </details>
+      ))}
+    </div>
   </div>
 </section>
-<script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />
+<script type="application/ld+json" is:inline set:html={jsonLd} />
+
 <style>
-  .faq { padding:48px 0; }
-  .faq details { border-bottom:1px solid #eee; padding:14px 0; }
-  .faq summary { cursor:pointer; font-weight:600; }
+  .faq { padding: var(--space-9) 0; }
+  .faq-cards { background: var(--cream-200); }
+  .faq-dark { background: var(--dark-900); }
+  .faq-wrap { max-width: 900px; }
+  .faq-dark .faq-wrap { max-width: 960px; }
+
+  .faq-head { text-align: center; }
+  .faq-cards .faq-head { display: flex; justify-content: center; }
+  .faq-title { margin: 14px 0 36px; }
+  .faq-cards .faq-title { text-align: center; }
+
+  .faq-summary {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  /* Variante cards (BPC) */
+  .faq-cards .faq-item {
+    background: var(--white);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-soft);
+    margin-bottom: 10px;
+    padding: 0 22px;
+  }
+  .faq-cards .faq-summary {
+    padding: 20px 0;
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  .faq-cards .faq-answer {
+    margin: 0 0 20px;
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    line-height: 1.7;
+    color: var(--text-secondary);
+  }
+
+  /* Variante dark (Salário-maternidade) */
+  .faq-dark .faq-item { border-bottom: 1px solid rgba(237, 224, 200, 0.1); }
+  .faq-dark .faq-summary {
+    padding: 22px 0;
+    font-family: var(--font-serif);
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--cream-100);
+  }
+  .faq-dark .faq-answer {
+    margin: 0 0 22px;
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    line-height: 1.7;
+    color: var(--ink-100);
+    opacity: 0.8;
+  }
 </style>

@@ -1,0 +1,17 @@
+---
+/** Eyebrow (sobretítulo) com tick em gradiente bronze. */
+interface Props {
+  label: string;
+  onDark?: boolean;
+  centered?: boolean;
+}
+const { label, onDark = false, centered = false } = Astro.props;
+---
+<div
+  class:list={['eyebrow', { 'eyebrow-on-dark': onDark }]}
+  style={centered ? 'justify-content:center' : undefined}
+>
+  <div class="eyebrow-tick"></div>
+  {label}
+  {centered && <div class="eyebrow-tick"></div>}
+</div>
