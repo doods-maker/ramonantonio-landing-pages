@@ -27,12 +27,19 @@ export const salarioMaternidade: LandingData = {
   oQueEQuote: 'Renda garantida durante a maternidade, para você se dedicar a quem mais importa.',
   oQueEParagrafos: [
     'O <strong>salário-maternidade</strong> é um benefício pago pelo INSS durante o afastamento do trabalho em razão do nascimento de filho, adoção ou guarda judicial para fins de adoção.',
-    'A duração padrão é de <strong>120 dias</strong>, podendo chegar a <strong>180 dias</strong> para empresas no Programa Empresa Cidadã e para MEI (a partir de 2023).',
+    'A duração padrão é de <strong>120 dias</strong>, podendo chegar a <strong>180 dias</strong> nas empresas que participam do Programa Empresa Cidadã.',
     'O valor e a duração variam conforme a categoria da segurada e a legislação vigente. Cada caso é analisado individualmente — fale com o escritório para orientação.',
   ],
 
+  destaqueLegal: {
+    titulo: 'O que mudou: mais mulheres têm direito',
+    texto:
+      'Até 2024, autônomas, MEIs, contribuintes facultativas e trabalhadoras rurais precisavam de 10 meses de contribuição para receber o salário-maternidade. O <strong>Supremo Tribunal Federal</strong> decidiu que essa exigência é inconstitucional: a proteção à maternidade vale para todas igualmente. Hoje, mesmo com poucas contribuições — em alguns casos uma única — pode haver direito ao benefício. Se você ficou de fora por causa da carência, pode valer a pena reavaliar o seu caso.',
+    fonte: 'Decisão do STF — ADIs 2.110 e 2.111 (2024).',
+  },
+
   requisitosTitulo: 'Quem tem direito ao benefício?',
-  requisitosDisclaimer: 'Requisitos e carências sujeitos à análise individual do INSS.',
+  requisitosDisclaimer: 'Requisitos sujeitos à análise individual do INSS. Cada situação tem detalhes que fazem diferença no seu caso.',
   requisitos: [
     {
       titulo: 'Empregada com carteira assinada (CLT)',
@@ -40,11 +47,11 @@ export const salarioMaternidade: LandingData = {
     },
     {
       titulo: 'Contribuinte individual / MEI / Autônoma',
-      descricao: 'Com contribuições ao INSS em dia e carência exigida cumprida. Solicita diretamente ao INSS, sem intermediação do empregador.',
+      descricao: 'Após a decisão do STF (2024), não é mais exigida a carência de 10 meses: mesmo com poucas contribuições — em alguns casos uma única — pode haver direito. Basta estar inscrita e ter contribuído ao INSS.',
     },
     {
       titulo: 'Segurada facultativa e trabalhadora rural',
-      descricao: 'Donas de casa, estudantes e trabalhadoras rurais em regime de economia familiar, com regras específicas de carência e comprovação.',
+      descricao: 'Donas de casa, estudantes e trabalhadoras rurais em regime de economia familiar. A antiga exigência de 10 meses caiu com a decisão do STF; as formas de comprovação variam conforme a categoria.',
     },
     {
       titulo: 'Desempregada com qualidade de segurada mantida',
@@ -66,8 +73,9 @@ export const salarioMaternidade: LandingData = {
   faqTitulo: 'Dúvidas sobre o salário-maternidade',
   faq: [
     { pergunta: 'Qual é o valor do salário-maternidade?', resposta: 'O valor depende da categoria da segurada. Para empregadas CLT, corresponde ao salário mensal. Para contribuintes individuais e facultativas, é calculado com base nas contribuições. Cada caso é analisado individualmente.' },
-    { pergunta: 'Por quanto tempo recebo o benefício?', resposta: 'A duração padrão é de 120 dias. Pode chegar a 180 dias para empresas no Programa Empresa Cidadã e para MEI (desde 2023). Para adoção, a duração pode variar conforme a legislação vigente.' },
-    { pergunta: 'Trabalhadora autônoma ou MEI tem direito?', resposta: 'Sim, desde que esteja em dia com as contribuições ao INSS e cumpra o período de carência exigido. O benefício é solicitado diretamente ao INSS, sem intermediação do empregador.' },
+    { pergunta: 'Por quanto tempo recebo o benefício?', resposta: 'A duração padrão é de 120 dias, podendo chegar a 180 dias nas empresas que participam do Programa Empresa Cidadã. Para adoção, a duração pode variar conforme a legislação vigente.' },
+    { pergunta: 'Trabalhadora autônoma ou MEI tem direito?', resposta: 'Sim — e houve uma mudança importante: o STF derrubou a exigência de 10 meses de contribuição para autônomas, MEIs, facultativas e trabalhadoras rurais (2024). Hoje, mesmo com poucas contribuições — em alguns casos uma única — pode haver direito. Cada caso tem detalhes (quando e como contribuir) que fazem diferença.' },
+    { pergunta: 'Preciso de 10 meses de contribuição?', resposta: 'Não necessariamente. Para a empregada CLT nunca houve carência. Para autônomas, MEIs, facultativas e trabalhadoras rurais, a carência de 10 meses foi declarada inconstitucional pelo STF em 2024 — hoje uma contribuição pode ser suficiente, conforme o caso.' },
     { pergunta: 'A trabalhadora rural tem direito?', resposta: 'Sim. A segurada especial (trabalhadora rural) pode ter direito comprovando a atividade rural nos meses anteriores ao fato gerador, conforme exige a lei.' },
     { pergunta: 'Quem adota tem direito ao salário-maternidade?', resposta: 'Sim. A segurada que adotar ou obtiver guarda judicial para fins de adoção tem direito ao salário-maternidade. A duração pode variar conforme a legislação vigente.' },
     { pergunta: 'As regras são iguais para urbana e rural?', resposta: 'Não. As exigências de comprovação e enquadramento mudam conforme o tipo de segurada. Por isso é importante analisar a sua situação específica.' },

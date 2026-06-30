@@ -50,6 +50,18 @@ import { salarioMaternidade as d } from '../../data/lps/salario-maternidade';
     </div>
   </section>
 
+  <!-- O QUE MUDOU — destaque legal (STF) -->
+  {d.destaqueLegal && (
+    <section class="destaque">
+      <div class="wrap destaque-inner">
+        <Eyebrow label="O QUE MUDOU" onDark />
+        <h2 class="section-h2 section-h2-light destaque-h2">{d.destaqueLegal.titulo}</h2>
+        <p class="destaque-txt" set:html={d.destaqueLegal.texto}></p>
+        {d.destaqueLegal.fonte && <p class="destaque-fonte">{d.destaqueLegal.fonte}</p>}
+      </div>
+    </section>
+  )}
+
   <!-- QUEM TEM DIREITO — cream-200, cards numerados -->
   <section id="quem-tem-direito" class="req">
     <div class="wrap">
@@ -165,6 +177,20 @@ import { salarioMaternidade as d } from '../../data/lps/salario-maternidade';
   .oque-p-lead { font-size: var(--text-lead); color: var(--text-primary); margin-bottom: 18px; }
   .oque-p-note { font-size: 0.8rem; opacity: 0.75; }
   .oque-p :global(strong) { color: var(--text-primary); }
+
+  /* O QUE MUDOU — destaque legal */
+  .destaque { background: var(--bronze-900); padding: var(--space-8) 0; }
+  .destaque-inner { max-width: 880px; }
+  .destaque-h2 { margin: 14px 0 16px; }
+  .destaque-txt {
+    font-family: var(--font-sans); font-size: var(--text-lead); line-height: 1.7;
+    color: var(--ink-100); margin: 0;
+  }
+  .destaque-txt :global(strong) { color: var(--bronze-300); }
+  .destaque-fonte {
+    font-family: var(--font-sans); font-size: 0.75rem; color: var(--bronze-300);
+    opacity: 0.8; margin: 16px 0 0;
+  }
 
   /* REQUISITOS — numerados */
   .req { background: var(--cream-200); padding: var(--space-9) 0; }

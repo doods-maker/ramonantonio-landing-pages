@@ -54,6 +54,9 @@ export interface LandingData {
   oQueEQuote?: string;
   oQueEParagrafos: string[];
 
+  /** Destaque legal opcional (ex.: mudança de jurisprudência) — renderizado como faixa de ênfase. */
+  destaqueLegal?: { titulo: string; texto: string; fonte?: string };
+
   /** Seção "Quem tem direito". */
   requisitosTitulo: string;
   requisitosIntro?: string;
