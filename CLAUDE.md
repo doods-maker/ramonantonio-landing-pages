@@ -37,7 +37,7 @@ src/
 │   └── lps/
 │       ├── bpc-loas.ts       ← dados da LP /bpc-loas
 │       ├── salario-maternidade.ts  ← dados da LP /salario-maternidade
-│       ├── auxiliar-doenca.ts      ← (próxima fase)
+│       ├── auxilio-doenca.ts       ← (próxima fase)
 │       └── __tests__/
 │           ├── bpc-loas.test.ts
 │           └── salario-maternidade.test.ts
@@ -235,8 +235,8 @@ para a subpasta FTP via cPanel.
 
 ### Próxima Fase (após 2ª pesquisa)
 
-- **`/auxiliar-doenca`** — Auxílio-doença, aguardando base jurídica verificada.
-- **`/auxiliar-acidente`** — Auxílio-acidente, aguardando base jurídica verificada.
+- **`/auxilio-doenca`** — Auxílio-doença, aguardando base jurídica verificada.
+- **`/auxilio-acidente`** — Auxílio-acidente, aguardando base jurídica verificada.
 - **`/trabalhista-geral`** — Temas trabalhistas, afunilar em 2–3 teses-âncora.
 
 Cada nova LP reutiliza toda a infraestrutura deste repositório (basta um novo arquivo
