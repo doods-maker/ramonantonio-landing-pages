@@ -145,7 +145,13 @@ const nav = [
     color: var(--ink-100); opacity: 0.85; margin: 0 auto 36px; max-width: 52ch;
   }
   .hero-ctas { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
-  @media (max-width: 768px) { .hero-photo { display: none; } }
+  @media (max-width: 768px) {
+    /* No celular a foto vira fundo da capa, com degradê escuro p/ legibilidade. */
+    .hero-photo { width: 100%; }
+    .hero-photo-fade {
+      background: linear-gradient(to bottom, rgba(25, 19, 16, 0.55) 0%, rgba(25, 19, 16, 0.72) 55%, var(--dark-900) 100%);
+    }
+  }
 
   /* O QUE É */
   .oque { background: var(--cream-100); padding: var(--space-9) 0; }

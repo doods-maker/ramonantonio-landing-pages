@@ -257,7 +257,13 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   .sobre-stats { display: flex; gap: var(--space-7); }
 
   @media (max-width: 768px) {
-    .hero-text { padding: 40px 24px; }
+    /* No celular a capa vira foto de fundo (a coluna da foto preenche o hero). */
+    .hero-split { position: relative; grid-template-columns: 1fr; min-height: 540px; }
+    .photo-col { position: absolute; inset: 0; }
+    .photo-fade {
+      background: linear-gradient(to bottom, rgba(25, 19, 16, 0.5) 0%, rgba(25, 19, 16, 0.74) 55%, var(--dark-900) 100%);
+    }
+    .hero-text { position: relative; z-index: 1; background: transparent; padding: 44px 24px; justify-content: flex-end; }
     .oque-body { padding-top: 0; }
   }
 </style>

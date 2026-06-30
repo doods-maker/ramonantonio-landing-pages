@@ -119,9 +119,16 @@ details[open] .faq-ch { transform: rotate(180deg); }
 
 /* Responsivo */
 @media (max-width: 768px) {
+  /* Escala tipográfica maior no celular — legibilidade (público idoso/PCD no BPC). */
+  :root {
+    --text-lead: 1.3125rem; /* 21px */
+    --text-base: 1.0625rem; /* 17px */
+    --text-sm: 1rem;        /* 16px */
+    --text-xs: 0.875rem;    /* 14px */
+  }
+  .eyebrow { font-size: 0.8rem; }
+
   .two-col { grid-template-columns: 1fr !important; }
   .three-col { grid-template-columns: 1fr 1fr !important; }
-  .hero-split { grid-template-columns: 1fr !important; min-height: auto !important; }
-  .hero-split .photo-col { display: none; }
-  .hero-text { padding: 40px 24px !important; }
+  /* hero-split: tratamento mobile (foto de fundo) fica na própria página. */
 }
