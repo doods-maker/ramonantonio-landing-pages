@@ -13,7 +13,12 @@ jobs:
         with:
           node-version: 20
       - run: npm ci
+      - run: npm test
       - run: npm run build
+        env:
+          PUBLIC_WHATSAPP_NUMERO: ${{ secrets.PUBLIC_WHATSAPP_NUMERO }}
+          PUBLIC_META_PIXEL_ID: ${{ secrets.PUBLIC_META_PIXEL_ID }}
+          PUBLIC_LEADS_ENDPOINT: ${{ secrets.PUBLIC_LEADS_ENDPOINT }}
       - name: Deploy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:

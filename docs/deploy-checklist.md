@@ -10,12 +10,17 @@ Passos para validar o deploy automático das Landing Pages via GitHub Action.
   - `FTP_USERNAME`: usuário FTP
   - `FTP_PASSWORD`: senha FTP
 
-## 2. Preencher variáveis de ambiente de build
+## 2. Configurar variáveis de ambiente de build (GitHub Secrets)
 
-Verificar/atualizar no arquivo `.env` (ou `.env.local` se for ignorado):
-- [ ] `PUBLIC_WHATSAPP_NUMERO`: número de WhatsApp para contato (ex.: `55989999999`)
-- [ ] `PUBLIC_META_PIXEL_ID`: ID do pixel Meta para rastreamento
-- [ ] `PUBLIC_LEADS_ENDPOINT`: URL da intranet para receber leads (ex.: `https://intranet.ramonantonio.adv.br/api/leads`)
+O CI faz checkout de um repositório limpo — o arquivo `.env` é ignorado pelo git e nunca chega ao build.
+As variáveis precisam estar configuradas como **GitHub repository secrets** (Settings → Secrets and variables → Actions):
+
+- [ ] `PUBLIC_WHATSAPP_NUMERO`: número de WhatsApp para contato (ex.: `5548999999999`)
+- [ ] `PUBLIC_META_PIXEL_ID`: ID do Pixel Meta para rastreamento
+- [ ] `PUBLIC_LEADS_ENDPOINT`: URL da intranet para receber leads (ex.: `https://intranet.ramonantonio.adv.br/api/public/leads`)
+
+> **Desenvolvimento local:** use `.env.local` (ignorado pelo git) para rodar `npm run dev`.
+> Em produção, apenas os secrets do GitHub alimentam o build.
 
 ## 3. Disparar o workflow manualmente
 

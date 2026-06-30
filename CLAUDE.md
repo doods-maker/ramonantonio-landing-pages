@@ -10,7 +10,7 @@ Integração com a intranet (`intranet-ramon`) para recebimento de leads via `PO
 - **Astro 5** — saída estática, `build.format: 'directory'` (gera `/slug/index.html` para URLs amigáveis).
 - **TypeScript** — tipagem de dados (tipos em `src/data/types.ts`, dados em `src/data/lps/<slug>.ts`).
 - **Vitest** — testes de conteúdo (validação OAB, padrões proibidos, SEO).
-- **@astrojs/sitemap** — sitemap para SEO (`https://ramonantonio.adv.br/sitemap-index.xml`).
+- ~~**@astrojs/sitemap**~~ — **removido**: o sitemap nativo colidiria com o do site institucional; o sitemap de `ramonantonio.adv.br` é gerenciado pelo `ramonantonio-site`.
 - **Meta Pixel** — rastreamento de conversão (eventos `Lead` + `Contact`).
 
 ## Comandos
@@ -203,13 +203,14 @@ PUBLIC_LEADS_ENDPOINT=https://intranet.ramonantonio.adv.br/api/public/leads
 
 Automático via **GitHub Actions** (`.github/workflows/deploy.yml`):
 a cada `push` na branch **main**, o CI roda `npm ci` → `npm test` → `npm run build` →
-envia `dist/` por **FTP** para o HostGator em **subpasta dedicada**.
+envia `dist/` por **FTP** para o HostGator diretamente em `public_html/`.
 
 ### Configuração FTP
 
-- **Destino:** `ramonantonio.adv.br/<subpasta>/` (ex: `ramonantonio.adv.br/lps/`).
-- **State name dedicado:** evita colidir com o deploy do site institucional (`ramonantonio-site`).
-- **Secrets necessários:** `FTP_SERVER`, `FTP_USERNAME`, `FTP_PASSWORD`.
+- **Destino:** `public_html/` (raiz do domínio). Cada LP fica em `public_html/<slug>/index.html`, acessível em `ramonantonio.adv.br/<slug>`. Não há `base` configurado no Astro nem subpasta intermediária `/lps/`.
+- **State name dedicado:** `.ftp-deploy-sync-state-landing.json` — evita colidir com o deploy do site institucional (`ramonantonio-site`).
+- **Secrets necessários (FTP):** `FTP_SERVER`, `FTP_USERNAME`, `FTP_PASSWORD`.
+- **Secrets necessários (build):** `PUBLIC_WHATSAPP_NUMERO`, `PUBLIC_META_PIXEL_ID`, `PUBLIC_LEADS_ENDPOINT` — injetados pelo workflow na etapa de build (ver `.github/workflows/deploy.yml`).
 
 ### Validação pré-deploy
 
@@ -221,7 +222,6 @@ envia `dist/` por **FTP** para o HostGator em **subpasta dedicada**.
 - [ ] `PUBLIC_WHATSAPP_NUMERO` definido e testado.
 - [ ] `PUBLIC_LEADS_ENDPOINT` confirmado (após deploy na intranet).
 - [ ] Política de privacidade vinculada (página própria ou link pro site).
-- [ ] URLs reescrita no `astro.config.mjs` (se subpasta).
 
 Deploy manual alternativo: `npm run build` e subir **todo o conteúdo de `dist/`**
 para a subpasta FTP via cPanel.
