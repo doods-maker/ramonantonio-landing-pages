@@ -228,16 +228,14 @@ para a subpasta FTP via cPanel.
 
 ## Status e Pendências
 
-### No Ar (2 LPs)
+### No Ar (4 LPs)
 
 - **`/bpc-loas`** — BPC/LOAS (Benefício de Prestação Continuada), design e conteúdo aprovado.
-- **`/salario-maternidade`** — Salário-maternidade urbano, design e conteúdo aprovado.
+- **`/salario-maternidade`** — Salário-maternidade urbano. Copy revisada na 2ª pesquisa: STF (ADIs 2.110/2.111) + IN PRES/INSS 188/2025 dispensam a carência para **todas** as seguradas → a copy fala em "qualidade de segurada", não em "uma única contribuição".
+- **`/auxilio-acidente`** — Auxílio-acidente como **foco** (B94, art. 86 da Lei 8.213/91; STJ Tema 416/862): indenizatório, 50% do salário de benefício, acumulável com o salário, isento de carência, exige sequela permanente após consolidação. Têm direito empregado, doméstico, avulso e segurado especial (contribuinte individual/MEI/facultativo **não**). O **auxílio-doença entra como benefício subsidiário** (fase de afastamento temporário) no conteúdo e no FAQ — decisão do Eduardo: foco no acidente, doença como possibilidade.
+- **`/trabalhista-geral`** — Mix de teses: verbas rescisórias, horas extras e adicionais, registro/FGTS e rescisão indireta; prescrição bienal/quinquenal (CF art. 7º XXIX; CLT art. 11) como destaque.
 
-### Próxima Fase (após 2ª pesquisa)
-
-- **`/auxilio-doenca`** — Auxílio-doença, aguardando base jurídica verificada.
-- **`/auxilio-acidente`** — Auxílio-acidente, aguardando base jurídica verificada.
-- **`/trabalhista-geral`** — Temas trabalhistas, afunilar em 2–3 teses-âncora.
+Mobile: a fonte foi ampliada em todas as LPs (≤768px) por legibilidade — importante no BPC (público idoso/PCD); e o hero do BPC e do salário-maternidade passa a usar a foto como **fundo** no celular (degradê escuro p/ legibilidade), em vez de ocultá-la.
 
 Cada nova LP reutiliza toda a infraestrutura deste repositório (basta um novo arquivo
 em `src/data/lps/` + página em `src/pages/`).
