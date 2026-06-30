@@ -1,0 +1,22 @@
+---
+import LandingLayout from '../../layouts/LandingLayout.astro';
+import Hero from '../../components/Hero.astro';
+import ProvaSocial from '../../components/ProvaSocial.astro';
+import Elegibilidade from '../../components/Elegibilidade.astro';
+import ComoFunciona from '../../components/ComoFunciona.astro';
+import FormLead from '../../components/FormLead.astro';
+import FAQ from '../../components/FAQ.astro';
+import CtaFinal from '../../components/CtaFinal.astro';
+import FloatingWhats from '../../components/FloatingWhats.astro';
+import { salarioMaternidade as d } from '../../data/lps/salario-maternidade';
+---
+<LandingLayout data={d}>
+  <Hero headline={d.heroHeadline} sub={d.heroSub} mensagemWhats={d.mensagemWhats} />
+  <ProvaSocial />
+  <Elegibilidade titulo={d.elegibilidadeTitulo} sinais={d.elegibilidadeSinais} />
+  <ComoFunciona passos={d.comoFunciona} />
+  <FormLead campanha={d.slug} />
+  <FAQ itens={d.faq} />
+  <CtaFinal titulo={d.ctaFinalTitulo} texto={d.ctaFinalTexto} mensagemWhats={d.mensagemWhats} />
+  <FloatingWhats mensagemWhats={d.mensagemWhats} />
+</LandingLayout>
