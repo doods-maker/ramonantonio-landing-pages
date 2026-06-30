@@ -1,0 +1,6 @@
+---
+import BotaoWhats from './BotaoWhats.astro';
+interface Props { mensagemWhats: string }
+const { mensagemWhats } = Astro.props;
+---
+<BotaoWhats texto="WhatsApp" mensagem={mensagemWhats} variante="flutuante" />

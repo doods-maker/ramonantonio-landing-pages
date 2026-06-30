@@ -1,0 +1,15 @@
+---
+import BotaoWhats from './BotaoWhats.astro';
+interface Props { titulo: string; texto: string; mensagemWhats: string }
+const { titulo, texto, mensagemWhats } = Astro.props;
+---
+<section class="ctaf">
+  <div class="container">
+    <h2>{titulo}</h2>
+    <p>{texto}</p>
+    <BotaoWhats texto="Falar no WhatsApp agora" mensagem={mensagemWhats} />
+  </div>
+</section>
+<style>
+  .ctaf { padding:56px 0; background:var(--cor-primaria); color:#fff; text-align:center; }
+</style>

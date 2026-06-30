@@ -1,0 +1,17 @@
+---
+import { site } from '../data/site';
+interface Props { texto: string; mensagem: string; variante?: 'primario' | 'flutuante' }
+const { texto, mensagem, variante = 'primario' } = Astro.props;
+const href = `https://wa.me/${site.whatsappNumero}?text=${encodeURIComponent(mensagem)}`;
+---
+<a href={href} target="_blank" rel="noopener" data-whats class={`btn-whats ${variante}`}>{texto}</a>
+<style>
+  .btn-whats { display:inline-block; background:var(--cor-acento); color:#fff; padding:14px 24px; border-radius:var(--raio); font-weight:600; text-decoration:none; }
+  .btn-whats.flutuante { position:fixed; right:18px; bottom:18px; z-index:50; box-shadow:0 4px 14px rgba(0,0,0,.25); }
+</style>
+<script>
+  import { trackContact } from '../lib/tracking';
+  document.querySelectorAll('[data-whats]').forEach((el) =>
+    el.addEventListener('click', () => trackContact()),
+  );
+</script>
