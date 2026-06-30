@@ -48,4 +48,14 @@ describe('enviarLead', () => {
     const res = await enviarLead('https://x/api', { nome: 'Ana', telefone: '(47) 99999-9999', campanha: 'bpc-loas' });
     expect(res.ok).toBe(false);
   });
+
+  it('finge sucesso e não faz fetch quando honeypot está preenchido', async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+    const res = await enviarLead('https://x/api', {
+      nome: 'Bot', telefone: '(47) 99999-9999', campanha: 'bpc-loas', website: 'spam.com',
+    });
+    expect(res.ok).toBe(true);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
 });
