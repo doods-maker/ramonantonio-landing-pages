@@ -27,6 +27,10 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftp
           local-dir: ./dist/
-          server-dir: ./public_html/
-          # state-name dedicado evita conflito de manifesto com o site institucional.
+          # A conta FTP deploy@ramonantonio.adv.br já tem como raiz o docroot do domínio
+          # (mesma conta do site institucional), por isso server-dir é "./" — os arquivos
+          # caem direto na raiz: ramonantonio.adv.br/bpc-loas, /salario-maternidade, etc.
+          server-dir: ./
+          # state-name dedicado: este deploy só gerencia seus próprios arquivos, sem apagar
+          # os do site institucional (que usa o state-name padrão).
           state-name: .ftp-deploy-sync-state-landing.json
