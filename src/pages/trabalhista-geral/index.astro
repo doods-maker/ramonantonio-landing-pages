@@ -11,6 +11,7 @@ import Stat from '../../components/Stat.astro';
 import FloatingWhats from '../../components/FloatingWhats.astro';
 import { trabalhistaGeral as d } from '../../data/lps/trabalhista-geral';
 
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const nav = [
   { href: '#o-que-e', label: 'O que resolve' },
   { href: '#quem-tem-direito', label: 'O que cobrar' },
@@ -21,8 +22,12 @@ const nav = [
 <LandingLayout data={d}>
   <Header variant="dark" navLinks={nav} />
 
-  <!-- HERO — dark, centrado -->
+  <!-- HERO — dark, com foto -->
   <section class="hero">
+    <div class="hero-photo">
+      <img class="hero-photo-img" src={`${base}/images/hero-trabalhista-geral.webp`} alt="Trabalhador em retrato preto e branco, ao lado de uma bancada de trabalho" width="864" height="1184" />
+      <div class="hero-photo-fade"></div>
+    </div>
     <div class="wrap hero-inner">
       <Eyebrow label={d.heroEyebrow} onDark centered />
       <h1 class="hero-h1" set:html={d.heroHeadline}></h1>
@@ -135,7 +140,10 @@ const nav = [
 
 <style>
   /* HERO */
-  .hero { background: var(--dark-900); padding: calc(var(--space-9) * 1.1) 0; position: relative; }
+  .hero { background: var(--dark-900); padding: calc(var(--space-9) * 1.1) 0; position: relative; overflow: hidden; }
+  .hero-photo { position: absolute; right: 0; top: 0; bottom: 0; width: 38%; }
+  .hero-photo-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+  .hero-photo-fade { position: absolute; inset: 0; background: linear-gradient(to right, var(--dark-900) 0%, transparent 65%); }
   .hero-inner { position: relative; z-index: 1; text-align: center; max-width: 820px; }
   .hero-h1 {
     font-family: var(--font-serif); font-weight: 600;
@@ -241,6 +249,11 @@ const nav = [
   .sobre-stats { display: flex; gap: var(--space-7); }
 
   @media (max-width: 768px) {
+    /* No celular a foto vira fundo da capa, com degradê escuro p/ legibilidade. */
+    .hero-photo { width: 100%; }
+    .hero-photo-fade {
+      background: linear-gradient(to bottom, rgba(25, 19, 16, 0.55) 0%, rgba(25, 19, 16, 0.72) 55%, var(--dark-900) 100%);
+    }
     .oque-body { padding-top: 0; }
   }
 </style>
