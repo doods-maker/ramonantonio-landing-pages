@@ -123,8 +123,9 @@ const { campanha, cardBg = 'white' } = Astro.props;
 
 <script>
   import { enviarLead } from '../lib/enviarLead';
-  import { trackLead } from '../lib/tracking';
+  import { trackLead, trackContact } from '../lib/tracking';
   const endpoint = import.meta.env.PUBLIC_LEADS_ENDPOINT;
+  const whats = import.meta.env.PUBLIC_WHATSAPP_NUMERO;
   document.querySelectorAll('[data-form-lead]').forEach((form) => {
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -132,15 +133,39 @@ const { campanha, cardBg = 'white' } = Astro.props;
       const msg = f.querySelector('[data-msg]') as HTMLElement;
       const btn = f.querySelector('button[type="submit"]') as HTMLButtonElement;
       const fd = new FormData(f);
+      const nome = String(fd.get('nome') ?? '').trim();
+      const telefone = String(fd.get('telefone') ?? '').trim();
+      const mensagem = String(fd.get('mensagem') ?? '').trim();
+      const honeypot = String(fd.get('website') ?? '');
+
+      // Sem endpoint configurado: o formulário encaminha o contato para o WhatsApp.
+      if (!endpoint) {
+        if (honeypot) return; // bot: ignora silenciosamente
+        if (!nome || !telefone) {
+          msg.textContent = 'Preencha nome e telefone.';
+          msg.className = 'form-msg erro';
+          return;
+        }
+        const texto =
+          `Olá! Vim pelo site.\nNome: ${nome}\nTelefone: ${telefone}` +
+          (mensagem ? `\nMensagem: ${mensagem}` : '');
+        trackContact();
+        window.open(`https://wa.me/${whats}?text=${encodeURIComponent(texto)}`, '_blank');
+        msg.textContent = 'Abrindo o WhatsApp para você finalizar o contato…';
+        msg.className = 'form-msg ok';
+        return;
+      }
+
+      // Com endpoint: grava o lead no CRM da intranet.
       btn.disabled = true;
       msg.textContent = 'Enviando…';
       msg.className = 'form-msg';
       const res = await enviarLead(endpoint, {
-        nome: String(fd.get('nome') ?? ''),
-        telefone: String(fd.get('telefone') ?? ''),
-        mensagem: String(fd.get('mensagem') ?? ''),
+        nome,
+        telefone,
+        mensagem,
         campanha: String(f.dataset.campanha ?? ''),
-        website: String(fd.get('website') ?? ''),
+        website: honeypot,
       });
       if (res.ok) {
         trackLead();
