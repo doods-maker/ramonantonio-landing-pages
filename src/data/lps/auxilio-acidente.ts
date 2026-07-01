@@ -2,13 +2,13 @@ import type { LandingData } from '../types';
 
 export const auxilioAcidente: LandingData = {
   slug: 'auxilio-acidente',
-  seoTitle: 'Auxílio-Acidente — INSS | Ramon Antonio Advogados',
+  seoTitle: 'Advogado de Auxílio-Acidente em Tubarão/SC | Ramon Antonio',
   seoDescription:
-    'Sequela permanente após um acidente? O auxílio-acidente é uma indenização do INSS que se soma ao salário. Veja quem tem direito, valor e como funciona — e a diferença para o auxílio-doença. Tubarão/SC.',
+    'Vai dar entrada no auxílio-acidente ou teve o pedido negado pelo INSS? Advogados previdenciários em Tubarão/SC orientam você sobre o pedido, a perícia e o recurso.',
   keywords: [
-    'auxílio-acidente', 'auxílio-acidente INSS', 'auxílio-acidente negado',
-    'sequela acidente trabalho', 'advogado auxílio-acidente SC', 'auxílio-doença',
-    'auxílio-acidente Tubarão', 'advogado previdenciário Vale do Itajaí',
+    'advogado auxílio-acidente', 'advogado auxílio-acidente SC', 'advogado auxílio-acidente Tubarão',
+    'auxílio-acidente negado', 'como dar entrada no auxílio-acidente', 'recurso auxílio-acidente INSS',
+    'auxílio-acidente INSS', 'advogado previdenciário Vale do Itajaí',
   ],
 
   heroEyebrow: 'AUXÍLIO-ACIDENTE · INSS',
