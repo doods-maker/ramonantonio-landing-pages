@@ -34,7 +34,7 @@ export const salarioMaternidade: LandingData = {
   destaqueLegal: {
     titulo: 'O que mudou: mais mulheres têm direito',
     texto:
-      'Por muito tempo, autônomas, MEIs, contribuintes facultativas e trabalhadoras rurais precisavam de 10 meses de contribuição para receber o salário-maternidade. O <strong>Supremo Tribunal Federal</strong> decidiu que essa exigência é inconstitucional: a proteção à maternidade vale para todas igualmente. Seguindo essa decisão, o INSS passou a <strong>dispensar a carência</strong> para todas as seguradas. Hoje, o que conta é ter a <strong>qualidade de segurada</strong> — estar amparada pelo INSS na data do fato gerador. Se você ficou de fora por causa da carência, pode valer a pena reavaliar o seu caso.',
+      'Por muito tempo, autônomas, MEIs, contribuintes facultativas e trabalhadoras rurais precisavam de 10 meses de contribuição para receber o salário-maternidade. O <strong>Supremo Tribunal Federal</strong> decidiu que essa exigência é inconstitucional: a proteção à maternidade vale para todas igualmente. Com isso, hoje existe a possibilidade de receber o benefício sem a antiga carência — o que pode contar é ter a <strong>qualidade de segurada</strong>, ou seja, estar amparada pelo INSS na data do fato gerador. Se você ficou de fora por causa da carência, pode valer a pena reavaliar o seu caso.',
     fonte: 'STF — ADIs 2.110 e 2.111; regulamentado pelo INSS (IN PRES/INSS nº 188/2025).',
   },
 
@@ -47,7 +47,7 @@ export const salarioMaternidade: LandingData = {
     },
     {
       titulo: 'Contribuinte individual / MEI / Autônoma',
-      descricao: 'A carência de 10 meses foi derrubada pelo STF e dispensada pelo INSS. Hoje basta ter a qualidade de segurada — estar inscrita e amparada pelo INSS na data do fato gerador.',
+      descricao: 'A carência de 10 meses foi derrubada pelo STF. Hoje pode bastar ter a qualidade de segurada — estar inscrita e amparada pelo INSS na data do fato gerador.',
     },
     {
       titulo: 'Segurada facultativa e trabalhadora rural',
@@ -74,8 +74,8 @@ export const salarioMaternidade: LandingData = {
   faq: [
     { pergunta: 'Qual é o valor do salário-maternidade?', resposta: 'O valor depende da categoria da segurada. Para empregadas CLT, corresponde ao salário mensal. Para contribuintes individuais e facultativas, é calculado com base nas contribuições. Cada caso é analisado individualmente.' },
     { pergunta: 'Por quanto tempo recebo o benefício?', resposta: 'A duração padrão é de 120 dias, podendo chegar a 180 dias nas empresas que participam do Programa Empresa Cidadã. Para adoção, a duração pode variar conforme a legislação vigente.' },
-    { pergunta: 'Trabalhadora autônoma ou MEI tem direito?', resposta: 'Sim — e houve uma mudança importante: o STF derrubou a exigência de 10 meses de contribuição para autônomas, MEIs, facultativas e trabalhadoras rurais, e o INSS passou a dispensar a carência. Hoje, o que conta é ter a qualidade de segurada na data do fato gerador. Cada caso tem detalhes que fazem diferença.' },
-    { pergunta: 'Preciso de 10 meses de contribuição?', resposta: 'Não. Para a empregada CLT nunca houve carência, e a carência de 10 meses das autônomas, MEIs, facultativas e trabalhadoras rurais foi declarada inconstitucional pelo STF e dispensada pelo INSS. Hoje o que importa é ter a qualidade de segurada, conforme o caso.' },
+    { pergunta: 'Trabalhadora autônoma ou MEI tem direito?', resposta: 'Sim — e houve uma mudança importante: o STF derrubou a exigência de 10 meses de contribuição para autônomas, MEIs, facultativas e trabalhadoras rurais. Hoje, o que pode contar é ter a qualidade de segurada na data do fato gerador. Cada caso tem detalhes que fazem diferença.' },
+    { pergunta: 'Preciso de 10 meses de contribuição?', resposta: 'Não. Para a empregada CLT nunca houve carência, e a carência de 10 meses das autônomas, MEIs, facultativas e trabalhadoras rurais foi declarada inconstitucional pelo STF. Hoje o que pode importar é ter a qualidade de segurada, conforme o caso.' },
     { pergunta: 'A trabalhadora rural tem direito?', resposta: 'Sim. A segurada especial (trabalhadora rural) pode ter direito comprovando a atividade rural nos meses anteriores ao fato gerador, conforme exige a lei.' },
     { pergunta: 'Quem adota tem direito ao salário-maternidade?', resposta: 'Sim. A segurada que adotar ou obtiver guarda judicial para fins de adoção tem direito ao salário-maternidade. A duração pode variar conforme a legislação vigente.' },
     { pergunta: 'As regras são iguais para urbana e rural?', resposta: 'Não. As exigências de comprovação e enquadramento mudam conforme o tipo de segurada. Por isso é importante analisar a sua situação específica.' },
