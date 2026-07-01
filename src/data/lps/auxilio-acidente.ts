@@ -14,7 +14,7 @@ export const auxilioAcidente: LandingData = {
   heroEyebrow: 'AUXÍLIO-ACIDENTE · INSS',
   heroHeadline: 'Ficou com uma sequela<br>depois de um acidente?',
   heroSub:
-    'Quem sofre um acidente e fica com uma sequela permanente que reduz a capacidade de trabalho pode ter direito ao auxílio-acidente — uma indenização mensal do INSS que se soma ao salário. E, se você ainda está afastado, há também o auxílio-doença. Entenda a diferença.',
+    'Quem sofre um acidente e fica com uma sequela permanente que reduz a capacidade de trabalho pode ter direito ao auxílio-acidente — uma indenização mensal do INSS que se soma ao salário. Cada situação tem o benefício mais adequado, e ajudamos você a entender qual se aplica ao seu caso.',
   mensagemWhats: 'Olá, vim pelo site e gostaria de tirar dúvidas sobre o auxílio-acidente.',
 
   passos: [
