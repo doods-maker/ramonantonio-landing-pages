@@ -3,7 +3,7 @@
 Landing pages estáticas de captação de leads, especialização previdenciária e trabalhista.
 Tráfego pago (Meta Ads) + SEO regional (SC). Construído em **Astro** (saída 100% estática),
 hospedado no **HostGator** por **subpasta** do domínio institucional (`ramonantonio.adv.br/<slug>`).
-Integração com a intranet (`intranet-ramon`) para recebimento de leads via `POST /api/public/leads`.
+Integração com o ramon-hub (Chatwoot fork, VPS) para recebimento de leads via `POST /public/api/v1/ramon_leads/<token>`.
 
 ## Stack
 
@@ -151,33 +151,34 @@ Commit é bloqueado se testes falharem (CI/CD).
 - Link: `wa.me/${PUBLIC_WHATSAPP_NUMERO}?text=...` (personalizado por LP).
 - **Evento Pixel:** `Track('Contact')` ao clicar.
 
-## Integração com a Intranet
+## Integração com o ramon-hub
 
-A intranet (`intranet-ramon`) executa o endpoint **`POST /api/public/leads`** que recebe
-as submissões do formulário. Detalhes em `docs/integracao-intranet-endpoint-leads.md`.
+O ramon-hub (fork do Chatwoot rodando em VPS) expõe um endpoint **`POST /public/api/v1/ramon_leads/<token>`**
+que recebe as submissões do formulário e cria leads na etapa "Novo" do funil Kanban.
+Detalhes em `docs/integracao-intranet-endpoint-leads.md`.
 
 ### Fluxo
 
 ```
 [FormLead (landing page)]
          ↓ POST JSON (nome, telefone, campanha, website honeypot)
-[Endpoint /api/public/leads na intranet-ramon]
-         ↓ validação, honeypot, RLS
-[Supabase tabela "leads"]
+[Endpoint /public/api/v1/ramon_leads/<token> no ramon-hub (VPS)]
+         ↓ validação, honeypot, token auth
+[Lead na etapa "Novo" do funil Kanban]
 ```
 
 **Validações no endpoint:**
 - Nome não vazio.
-- Telefone: apenas dígitos, 12–13 caracteres.
-- Honeypot: se `website` preenchido, retorna sucesso fake (não insere).
+- Telefone: apenas dígitos, 12–13 caracteres (sem `+`).
+- Honeypot: se `website` preenchido, retorna sucesso fake 200 (não cria lead).
 
-**Inserção no banco:**
-- `origem: 'meta_ads'` (fixo).
-- `campanha: <slug>` (ex: `'bpc-loas'`).
-- `etapa: 'novo'` (estado inicial).
+**Criação do lead:**
+- `source: <campanha>` (ex: `'bpc-loas'` — identifica a origem).
+- `etapa: 'novo'` (primeira etapa do funil Kanban).
+- `mensagem` (se fornecida) → grava como nota automática.
 
-**Implementação:** A intranet precisa criar o route em `app/api/public/leads/route.ts`
-(código-modelo incluído na documentação). Eduardo executa o commit e deploy na intranet.
+**Autenticação:** Token na URL (`<token>` = `RAMON_LEAD_CAPTURE_TOKEN` da VPS).
+Token inválido → `401 Unauthorized`. Rate limit: 5 req/min por IP → `429 Too Many Requests`.
 
 ## Variáveis de Ambiente
 
@@ -190,14 +191,14 @@ PUBLIC_META_PIXEL_ID=123456789...
 # WhatsApp
 PUBLIC_WHATSAPP_NUMERO=55479999999999
 
-# Endpoint na intranet (aprovado pelo Eduardo)
-PUBLIC_LEADS_ENDPOINT=https://intranet.ramonantonio.adv.br/api/public/leads
+# Endpoint do ramon-hub com token de autenticação
+PUBLIC_LEADS_ENDPOINT=https://chat.ramonantonio.adv.br/public/api/v1/ramon_leads/seu-token-aqui
 ```
 
 **Antes do deploy:**
 1. Eduardo fornece o número de WhatsApp.
 2. Eduardo fornece o Pixel ID do Meta (novo ou existente).
-3. Eduardo aprova o endpoint (após implementação na intranet).
+3. Eduardo fornece o token (`RAMON_LEAD_CAPTURE_TOKEN`) e a URL final do endpoint (após deploy do ramon-hub).
 
 ## Deploy
 

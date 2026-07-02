@@ -1,254 +1,251 @@
-# Integração do Endpoint de Leads na Intranet
+# Integração do Endpoint de Leads — ramon-hub
 
-Este guia descreve como implementar e testar o endpoint `POST /api/public/leads` no repositório `intranet-ramon`. Este endpoint recebe submissões de formulários da landing page estática (Astro) e insere os leads na tabela `public.leads` do Supabase.
+> **Nota histórica:** Este guia era originalmente `integracao-intranet-endpoint-leads.md` (endpoint na intranet Next.js/Supabase). A integração foi **aposentada em favor do ramon-hub** (Chatwoot fork, VPS). O nome do arquivo é mantido por razões históricas; o conteúdo abaixo descreve o novo endpoint.
+
+Este guia descreve como enviar leads dos formulários da landing page estática (Astro) para o ramon-hub. O endpoint recebe submissões e cria leads na etapa **"Novo"** do funil Kanban.
 
 ---
 
 ## 1. Contexto
 
-### Por que um endpoint na intranet?
+### Por que um endpoint no ramon-hub?
 
-A tabela `public.leads` no Supabase está protegida por **Row Level Security (RLS)** que exige autenticação: `auth.uid() is not null`. Isso significa que:
+O ramon-hub é o **painel de leads e atendimento** (fork do Chatwoot), rodando em VPS dedicada. Centraliza:
+- Recebimento e organização de leads.
+- Funil Kanban com etapas customizadas.
+- Histórico de conversas e notas.
+- Dashboard de métricas.
 
-- ❌ A landing page estática (Astro) **não pode fazer insert direto** com a chave anônima (`NEXT_PUBLIC_SUPABASE_ANON_KEY`).
-- ❌ Abrir insert anônimo sem autenticação viraria spam e comprometeria a segurança.
-- ✅ A solução é criar um endpoint **privado** na intranet (Next.js com service role) que autentica via `SUPABASE_SERVICE_ROLE_KEY`.
+A landing page estática (Astro) **não mantém estado**; por isso envia leads para um backend externo (ramon-hub) que:
+- ✅ Valida e sanitiza dados.
+- ✅ Cria o lead na etapa "Novo".
+- ✅ Grava notas do formulário.
+- ✅ Aplica rate limiting.
 
 ### Fluxo
 
 1. Landing page (Astro) coleta dados: `nome`, `telefone`, `campanha`, `mensagem` (opcional), e um honeypot (`website`).
-2. Faz `fetch POST` para `https://intranet.ramonantonio.adv.br/api/public/leads`.
+2. Faz `fetch POST` para `https://chat.ramonantonio.adv.br/public/api/v1/ramon_leads/<token>`.
 3. O endpoint valida:
    - Nome não vazio.
-   - Telefone (apenas dígitos, 12–13 caracteres).
-   - Honeypot: se `website` foi preenchido, retorna sucesso fake (não insere).
-4. Insere na tabela `leads` com:
-   - `origem: 'meta_ads'` (origem fixa, já que vem da LP).
-   - `campanha`: valor recebido (ex: `'bpc-loas'`).
-   - `etapa: 'novo'` (estado inicial).
-5. Se houver `mensagem`, grava-a como **nota do lead** na tabela `lead_notas` (`lead_id`, `conteudo`) — assim não é preciso alterar o schema de `leads`. *(Alternativa: adicionar uma coluna `mensagem text` em `leads`; o caminho via `lead_notas` é o recomendado por reusar o que já existe.)*
-6. Retorna `HTTP 200 + {"ok": true}` (sucesso) ou `HTTP 400 + {"ok": false}` (validação).
+   - Telefone em formato E.164 sem `+` (apenas dígitos, 12–13 caracteres).
+   - Honeypot: se `website` foi preenchido, retorna sucesso fake (não cria lead).
+4. Cria o lead com:
+   - `source: <campanha>` (ex: `'bpc-loas'`, mapeia a origem do formulário).
+   - `etapa: 'novo'` (estado inicial, primeira etapa do funil).
+5. Se houver `mensagem`, grava-a como **nota automática** vinculada ao lead.
+6. Retorna `HTTP 201` (sucesso) ou `HTTP 200` (honeypot) ou `HTTP 401` (token inválido) ou `HTTP 429` (rate limit).
 
 ---
 
-## 2. Onde colar: estrutura do arquivo
+## 2. Endpoint do ramon-hub
 
-No repositório `intranet-ramon`, crie o arquivo:
+O endpoint é **público** e **requer autenticação via token**:
 
 ```
-intranet-ramon/
-└── app/
-    └── api/
-        └── public/
-            └── leads/
-                ├── route.ts          ← criar aqui
-                └── route.test.ts     ← teste
+POST https://chat.ramonantonio.adv.br/public/api/v1/ramon_leads/<token>
 ```
+
+Onde:
+- **`<token>`** = `RAMON_LEAD_CAPTURE_TOKEN` (variável de ambiente da VPS do ramon-hub).
+- **Host:** `chat.ramonantonio.adv.br` (VPS dedicada).
+- **Protocolo:** HTTPS (SSL obrigatório).
+
+**Status HTTP esperados:**
+- `201 Created` — lead criado com sucesso.
+- `200 OK` — honeypot detectado (não cria lead, mas retorna sucesso fake para segurança).
+- `401 Unauthorized` — token inválido ou ausente.
+- `429 Too Many Requests` — rate limit excedido (máx. 5 requisições por minuto por IP).
+- `400 Bad Request` — validação falhou (nome vazio, telefone inválido, etc.).
 
 ---
 
-## 3. Código do route.ts
+## 3. Payload e Validações
 
-Crie o arquivo `intranet-ramon/app/api/public/leads/route.ts`:
+### Estrutura da requisição
 
-```ts
-import { NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase/admin'; // confirmar caminho real na intranet
-
-const ORIGEM_PERMITIDA = 'https://ramonantonio.adv.br';
-
-function corsHeaders(origin: string | null) {
-  const allow = origin === ORIGEM_PERMITIDA ? ORIGEM_PERMITIDA : '';
-  return {
-    'Access-Control-Allow-Origin': allow,
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
-  };
-}
-
-export function OPTIONS(req: Request) {
-  return new NextResponse(null, { status: 204, headers: corsHeaders(req.headers.get('origin')) });
-}
-
-export async function POST(req: Request) {
-  const headers = corsHeaders(req.headers.get('origin'));
-  let body: { nome?: string; telefone?: string; campanha?: string; mensagem?: string; website?: string };
-  try {
-    body = await req.json();
-  } catch {
-    return NextResponse.json({ ok: false }, { status: 400, headers });
-  }
-
-  // Honeypot: finge sucesso, não grava.
-  if (body.website) return NextResponse.json({ ok: true }, { status: 200, headers });
-
-  const nome = body.nome?.trim();
-  const telefone = (body.telefone ?? '').replace(/\D/g, '');
-  const campanha = body.campanha?.trim() || 'lp';
-  const mensagem = body.mensagem?.trim();
-  if (!nome || telefone.length < 12 || telefone.length > 13) {
-    return NextResponse.json({ ok: false }, { status: 400, headers });
-  }
-
-  // Insere o lead e recupera o id gerado.
-  const { data, error } = await supabaseAdmin
-    .from('leads')
-    .insert({ nome, telefone, origem: 'meta_ads', campanha, etapa: 'novo' })
-    .select('id')
-    .single();
-  if (error || !data) return NextResponse.json({ ok: false }, { status: 500, headers });
-
-  // Mensagem livre do formulário vira uma nota no lead (sem alterar o schema de `leads`).
-  if (mensagem) {
-    await supabaseAdmin.from('lead_notas').insert({ lead_id: data.id, conteudo: mensagem });
-  }
-
-  return NextResponse.json({ ok: true }, { status: 200, headers });
+```json
+{
+  "nome": "João Silva",
+  "telefone": "5547999999999",
+  "campanha": "bpc-loas",
+  "mensagem": "Gostaria de saber mais sobre o processo",
+  "website": ""
 }
 ```
 
-### Atenção — confirmação de caminho
+**Campos:**
+- **`nome`** (string, obrigatório) — não pode ser vazio após trim.
+- **`telefone`** (string, obrigatório) — formato E.164 sem `+`, apenas dígitos. Aceita 12–13 caracteres (ex: `5547999999999` ou `47999999999`).
+- **`campanha`** (string, recomendado) — identifica a origem do lead (ex: `'bpc-loas'`, `'salario-maternidade'`). Mapeia para o campo `source` no ramon-hub.
+- **`mensagem`** (string, opcional) — texto adicional do formulário. Vira nota automática no lead.
+- **`website`** (string, opcional, honeypot) — **nunca** deve ser preenchido por usuário legítimo. Se presente e não vazio, o endpoint **retorna 200 (sucesso fake) sem criar o lead** — tática anti-spam.
 
-**Confirme o caminho real do cliente Supabase admin na intranet.** O import acima assume `@/lib/supabase/admin`, mas pode estar em outro local (ex: `lib/clients/supabase`, `utils/supabase/admin.ts`, etc.). Ajuste conforme necessário.
+### Validações no endpoint
 
----
+1. **Nome:** não vazio após trim.
+2. **Telefone:** apenas dígitos, 12–13 caracteres, sem `+`.
+3. **Honeypot:** se `website` ≠ vazio, sucesso fake (200) sem criar lead.
 
-## 4. Teste (route.test.ts)
+Se qualquer validação falhar, retorna `400` com detalhes opcionais no corpo.
 
-Crie o arquivo `intranet-ramon/app/api/public/leads/route.test.ts`:
+### Comportamento pós-criação
 
-```ts
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-
-// Mock do cliente admin do Supabase (ajustar o caminho ao real da intranet).
-// `leads.insert(...).select('id').single()` retorna o id; `lead_notas.insert(...)` grava a nota.
-const leadsInsert = vi.fn().mockReturnValue({
-  select: () => ({ single: () => Promise.resolve({ data: { id: 'lead-1' }, error: null }) }),
-});
-const notasInsert = vi.fn().mockResolvedValue({ error: null });
-vi.mock('@/lib/supabase/admin', () => ({
-  supabaseAdmin: {
-    from: (table: string) =>
-      table === 'lead_notas' ? { insert: notasInsert } : { insert: leadsInsert },
-  },
-}));
-
-import { POST } from './route';
-
-function req(body: unknown, origin = 'https://ramonantonio.adv.br') {
-  return new Request('https://intranet/api/public/leads', {
-    method: 'POST',
-    headers: { 'content-type': 'application/json', origin },
-    body: JSON.stringify(body),
-  });
-}
-
-describe('POST /api/public/leads', () => {
-  beforeEach(() => {
-    leadsInsert.mockClear();
-    notasInsert.mockClear();
-  });
-
-  it('insere lead válido com origem meta_ads', async () => {
-    const res = await POST(req({ nome: 'Ana', telefone: '5547999999999', campanha: 'bpc-loas' }));
-    expect(res.status).toBe(200);
-    expect(leadsInsert).toHaveBeenCalledWith(
-      expect.objectContaining({ nome: 'Ana', telefone: '5547999999999', origem: 'meta_ads', campanha: 'bpc-loas', etapa: 'novo' }),
-    );
-  });
-  it('grava a mensagem como nota do lead', async () => {
-    const res = await POST(req({ nome: 'Ana', telefone: '5547999999999', campanha: 'bpc-loas', mensagem: 'Tenho 67 anos e renda baixa.' }));
-    expect(res.status).toBe(200);
-    expect(notasInsert).toHaveBeenCalledWith(
-      expect.objectContaining({ lead_id: 'lead-1', conteudo: 'Tenho 67 anos e renda baixa.' }),
-    );
-  });
-  it('não cria nota quando não há mensagem', async () => {
-    await POST(req({ nome: 'Ana', telefone: '5547999999999', campanha: 'bpc-loas' }));
-    expect(notasInsert).not.toHaveBeenCalled();
-  });
-  it('rejeita honeypot preenchido sem inserir', async () => {
-    const res = await POST(req({ nome: 'Bot', telefone: '5547999999999', campanha: 'x', website: 'spam' }));
-    expect(res.status).toBe(200);
-    expect(leadsInsert).not.toHaveBeenCalled();
-  });
-  it('rejeita payload sem nome', async () => {
-    const res = await POST(req({ telefone: '5547999999999', campanha: 'x' }));
-    expect(res.status).toBe(400);
-  });
-});
-```
-
-### Atenção — ajuste do mock
-
-**Confirme o caminho real do cliente admin** no mock (`vi.mock('@/lib/supabase/admin', ...)`) para que corresponda ao mesmo import do `route.ts`.
+- Lead é criado na etapa **"Novo"** do funil Kanban.
+- Campo `source` recebe o valor de `campanha` (ex: `source: 'bpc-loas'`).
+- Se `mensagem` foi fornecida, grava-se automaticamente como uma nota (comentário) associada ao lead, com marca de origem "formulário" ou similar (conforme implementação do ramon-hub).
 
 ---
 
-## 5. Variáveis de ambiente
-
-Verifique se as seguintes variáveis estão **configuradas tanto na Vercel quanto na VPS** onde a intranet roda:
-
-- `SUPABASE_SERVICE_ROLE_KEY` — chave privada (service role) do Supabase. Mantém acesso total ao banco, sem RLS.
-- `NEXT_PUBLIC_SUPABASE_URL` — URL do projeto Supabase (ex: `https://seu-projeto.supabase.co`).
-
-**Na landing page** (`ramonantonio-site`), configure:
-
-- `PUBLIC_LEADS_ENDPOINT` — URL completa do endpoint na intranet. Exemplo:
-  ```
-  PUBLIC_LEADS_ENDPOINT=https://intranet.ramonantonio.adv.br/api/public/leads
-  ```
-
----
-
-## 6. Teste de validação (curl)
-
-Depois de fazer deploy do endpoint, teste com:
+## 4. Exemplo de requisição (curl)
 
 ```bash
-curl -i -X POST https://intranet.ramonantonio.adv.br/api/public/leads \
+curl -i -X POST https://chat.ramonantonio.adv.br/public/api/v1/ramon_leads/seu-token-aqui \
   -H 'Content-Type: application/json' \
-  -H 'Origin: https://ramonantonio.adv.br' \
-  -d '{"nome":"Teste","telefone":"5547999999999","campanha":"bpc-loas","mensagem":"Mensagem de teste"}'
+  -d '{
+    "nome": "Maria Santos",
+    "telefone": "5547999999999",
+    "campanha": "auxilio-acidente",
+    "mensagem": "Sofri acidente no trabalho há 3 meses."
+  }'
 ```
 
-### Resultado esperado
+### Resultado esperado (sucesso)
+
+```
+HTTP/1.1 201 Created
+Content-Type: application/json
+
+{
+  "id": "lead-12345",
+  "status": "novo",
+  "source": "auxilio-acidente"
+}
+```
+
+### Resultado esperado (honeypot)
 
 ```
 HTTP/1.1 200 OK
 Content-Type: application/json
-Access-Control-Allow-Origin: https://ramonantonio.adv.br
 
-{"ok":true}
+{ "ok": true }
 ```
-
-### Verificação no banco
-
-1. Acesse o Supabase dashboard.
-2. Abra a tabela `leads`.
-3. Procure pelo registro recém-inserido com:
-   - `origem: 'meta_ads'`
-   - `campanha: 'bpc-loas'`
-   - `etapa: 'novo'`
-   - `nome: 'Teste'`
-   - `telefone: '5547999999999'`
-4. Abra a tabela `lead_notas` e confirme uma nota com `conteudo: 'Mensagem de teste'` vinculada ao `lead_id` recém-criado.
-
-Se encontrar, o endpoint está funcionando.
 
 ---
 
-## 7. Nota de aprovação
+## 5. Variáveis de Ambiente
 
-**Esta implementação (arquivo `route.ts`, teste e commit) é executada no repositório `intranet-ramon` pelo Eduardo**, conforme a **Regra de Aprovação** estabelecida na constituição do workspace (RAdvogados/CLAUDE.md).
+### Na landing page (`landing-pages`, este repositório)
 
-A landing page (`ramonantonio-site`, neste repositório) apenas **faz fetch para este endpoint**; ela não contém lógica de banco de dados.
+Configure no arquivo `.env.local` (não commitar) ou no GitHub Actions Secrets:
 
-Passos após completar a implementação:
-1. Rodar `npx vitest run app/api/public/leads/route.test.ts` (esperado: 5 testes passando).
-2. Fazer commit: `git commit -m "feat: endpoint POST /api/public/leads com validação e honeypot"`.
-3. Fazer push para `intranet-ramon`.
-4. Deploy na VPS (ou Vercel, conforme configurado).
-5. Validar com o curl acima.
+```env
+# Endpoint do ramon-hub com token
+PUBLIC_LEADS_ENDPOINT=https://chat.ramonantonio.adv.br/public/api/v1/ramon_leads/seu-token-aqui
+```
 
-Depois de validado, a landing page já pode enviar leads para a intranet usando o `PUBLIC_LEADS_ENDPOINT` configurado no seu `.env.local`.
+**Onde obter o token:**
+- Localize a variável `RAMON_LEAD_CAPTURE_TOKEN` na VPS do ramon-hub.
+- Ou solicite ao Eduardo / administrador do servidor.
+
+### Na VPS do ramon-hub
+
+Certifique-se de que a variável de ambiente está configurada:
+
+```bash
+export RAMON_LEAD_CAPTURE_TOKEN=seu-token-seguro-aqui
+```
+
+(Detalhes de deploy e configuração da VPS ficam em `ramon-hub/docs/deployment.md`.)
+
+---
+
+## 6. Implementação no formulário (FormLead.astro)
+
+A landing page já possui a lógica de envio em `src/lib/enviarLead.ts`:
+
+```typescript
+// src/lib/enviarLead.ts
+export async function enviarLead(dados: {
+  nome: string;
+  telefone: string;
+  campanha: string;
+  mensagem?: string;
+}) {
+  const endpoint = import.meta.env.PUBLIC_LEADS_ENDPOINT;
+  if (!endpoint) {
+    console.error('PUBLIC_LEADS_ENDPOINT não configurado');
+    return false;
+  }
+
+  try {
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dados),
+    });
+
+    // 201 = sucesso; 200 = honeypot (também conta como "sucesso" pro usuário)
+    return response.status === 201 || response.status === 200;
+  } catch (error) {
+    console.error('Erro ao enviar lead:', error);
+    return false;
+  }
+}
+```
+
+**Fluxo:**
+1. Usuário preenche o formulário (`FormLead.astro`).
+2. Clica "Enviar".
+3. JavaScript chama `enviarLead()` com os dados.
+4. Fetch POST para `PUBLIC_LEADS_ENDPOINT`.
+5. Se sucesso (201 ou 200), dispara evento Meta Pixel `Track('Lead')`.
+6. Exibe mensagem de confirmação ao usuário.
+
+**Nenhuma alteração é necessária no código do formulário** — a URL do endpoint é lida de `PUBLIC_LEADS_ENDPOINT` em tempo de build.
+
+---
+
+## 7. Teste e Validação
+
+### Teste pré-deploy
+
+Antes de fazer deploy das landing pages, valide que o endpoint está pronto:
+
+```bash
+curl -i -X POST https://chat.ramonantonio.adv.br/public/api/v1/ramon_leads/seu-token-aqui \
+  -H 'Content-Type: application/json' \
+  -d '{"nome":"Teste","telefone":"5547999999999","campanha":"teste"}'
+```
+
+Esperado: `HTTP/1.1 201 Created`.
+
+### Teste no painel (ramon-hub)
+
+Após enviar um lead pelo formulário:
+1. Acesse https://chat.ramonantonio.adv.br/ (painel do ramon-hub).
+2. Abra a aba **Kanban** ou **Leads**.
+3. Procure pelo lead recém-criado na etapa **"Novo"**.
+4. Confirme os dados: nome, telefone, source (campanha), e a nota (se foi fornecida).
+
+---
+
+## 8. Troubleshooting
+
+| Problema | Causa provável | Solução |
+|---|---|---|
+| `401 Unauthorized` | Token inválido ou ausente. | Confirme `PUBLIC_LEADS_ENDPOINT` com o token correto. |
+| `429 Too Many Requests` | Ultrapassou 5 requisições/minuto. | Aguarde 1 minuto; não é um erro do cliente. |
+| `400 Bad Request` | Nome vazio ou telefone inválido. | Valide os dados no formulário antes de enviar. |
+| Lead não aparece no painel | Endpoint respondeu 200/201 mas lead não foi criado. | Verifique se o ramon-hub está rodando e se há espaço em disco. |
+| Honeypot não funciona | Campo `website` não está no formulário. | Adicione um campo hidden `name="website"` no HTML. |
+
+---
+
+## 9. Referências
+
+- **Código do formulário:** `src/components/FormLead.astro` (este repositório).
+- **Lógica de envio:** `src/lib/enviarLead.ts` (este repositório).
+- **Painel de leads:** https://chat.ramonantonio.adv.br/ (ramon-hub em produção).
+- **Documentação do ramon-hub:** `ramon-hub/docs/` (repositório doods-maker/ramon-hub).
