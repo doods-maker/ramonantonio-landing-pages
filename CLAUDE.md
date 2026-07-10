@@ -104,7 +104,7 @@ src/
    ```
 
 3. **Testar e validar:**
-   - Verificar tipagem (`npm run check` ou `tsc --noEmit`).
+   - Verificar tipagem: `npx astro check` (não existe script `npm run check` neste projeto).
    - Rodar testes: `npm test`.
    - Validação de conteúdo (OAB, proibições, SEO) ocorre automaticamente.
 
