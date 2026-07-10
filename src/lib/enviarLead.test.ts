@@ -84,6 +84,26 @@ describe('enviarLead', () => {
     expect(res.ok).toBe(false);
   });
 
+  it('inclui consent:true no body quando consent é true', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true });
+    vi.stubGlobal('fetch', fetchMock);
+    await enviarLead('https://x/api', {
+      nome: 'Ana', telefone: '(47) 99999-9999', campanha: 'bpc-loas', consent: true,
+    });
+    const body = JSON.parse(fetchMock.mock.calls[0][1].body);
+    expect(body.consent).toBe(true);
+  });
+
+  it('omite a chave consent do body quando não houver consent', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true });
+    vi.stubGlobal('fetch', fetchMock);
+    await enviarLead('https://x/api', {
+      nome: 'Ana', telefone: '(47) 99999-9999', campanha: 'bpc-loas', consent: false,
+    });
+    const body = JSON.parse(fetchMock.mock.calls[0][1].body);
+    expect('consent' in body).toBe(false);
+  });
+
   it('manda o token no header e faz POST na URL sem token', async () => {
     const fetchMock = vi.fn().mockResolvedValue({ ok: true });
     vi.stubGlobal('fetch', fetchMock);
