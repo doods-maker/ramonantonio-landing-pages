@@ -30,6 +30,10 @@ const { campanha, cardBg = 'white' } = Astro.props;
     </label>
     <!-- honeypot: oculto para humanos -->
     <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" class="hp" />
+    <label class="field-consent">
+      <input type="checkbox" name="consent" />
+      <span>Autorizo o escritório a me enviar orientações e novidades sobre meus direitos pelo WhatsApp. Opcional — posso revogar quando quiser. <a href="/politica-de-privacidade/">Política de privacidade</a></span>
+    </label>
     <button type="submit" class="form-submit">Enviar mensagem</button>
     <p data-msg class="form-msg" role="status"></p>
   </form>
@@ -91,6 +95,17 @@ const { campanha, cardBg = 'white' } = Astro.props;
   }
   .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 
+  .field-consent {
+    display: flex;
+    gap: 8px;
+    font-family: var(--font-sans);
+    font-size: var(--text-xs);
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+  .field-consent input { accent-color: var(--bronze-600); width: auto; margin-top: 2px; }
+  .field-consent a { color: var(--bronze-600); text-decoration: underline; }
+
   .form-submit {
     height: 52px;
     border: none;
@@ -121,6 +136,7 @@ const { campanha, cardBg = 'white' } = Astro.props;
   }
   @media (max-width: 768px) {
     .form-disclaimer { font-size: 0.8rem; }
+    .field-consent { font-size: 0.8rem; }
   }
 </style>
 
@@ -140,6 +156,7 @@ const { campanha, cardBg = 'white' } = Astro.props;
       const telefone = String(fd.get('telefone') ?? '').trim();
       const mensagem = String(fd.get('mensagem') ?? '').trim();
       const honeypot = String(fd.get('website') ?? '');
+      const consent = fd.get('consent') === 'on';
 
       // Sem endpoint configurado: o formulário encaminha o contato para o WhatsApp.
       if (!endpoint) {
@@ -169,6 +186,7 @@ const { campanha, cardBg = 'white' } = Astro.props;
         mensagem,
         campanha: String(f.dataset.campanha ?? ''),
         website: honeypot,
+        consent,
       });
       if (res.ok) {
         trackLead();

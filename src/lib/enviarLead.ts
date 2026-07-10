@@ -6,6 +6,8 @@ export interface LeadPayload {
   mensagem?: string;
   /** Honeypot anti-bot: deve vir vazio de humanos. */
   website?: string;
+  /** Consentimento LGPD de marketing (opcional). */
+  consent?: boolean;
 }
 
 const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content'] as const;
@@ -82,6 +84,7 @@ export async function enviarLead(
         telefone,
         campanha: payload.campanha,
         mensagem: payload.mensagem?.trim() || undefined,
+        ...(payload.consent ? { consent: true } : {}),
         ...capturarUtm(),
       }),
     });
