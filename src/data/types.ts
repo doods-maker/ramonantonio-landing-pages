@@ -68,6 +68,9 @@ export interface LandingData {
   documentosIntro?: string;
   documentos: Documento[];
 
+  /** Lead magnet opcional: convite pra receber o checklist em PDF pelo WhatsApp. */
+  checklist?: { titulo: string; texto: string; mensagemWhats: string; botao: string };
+
   /** FAQ (8–12 itens) + JSON-LD FAQPage. */
   faqTitulo: string;
   faq: FaqItem[];

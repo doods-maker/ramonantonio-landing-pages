@@ -70,6 +70,14 @@ export const trabalhistaGeral: LandingData = {
     { titulo: 'RG e CPF', descricao: 'Documentos pessoais do trabalhador' },
   ],
 
+  checklist: {
+    titulo: 'Prefere esta lista completa, para marcar com calma?',
+    texto:
+      'Enviamos pelo WhatsApp o checklist em PDF — com orientações de como reunir cada documento e prova, inclusive o extrato do FGTS pelo aplicativo.',
+    mensagemWhats: 'Olá, vim pelo site e gostaria de receber o checklist de documentos do caso trabalhista.',
+    botao: 'Receber o checklist',
+  },
+
   faqTitulo: 'Dúvidas sobre direitos trabalhistas',
   faq: [
     { pergunta: 'Tenho prazo para entrar com ação trabalhista?', resposta: 'Sim. Em regra, são até 2 anos após o fim do contrato para ajuizar a reclamação, podendo cobrar os créditos referentes aos últimos 5 anos. Por isso é importante não deixar para depois.' },

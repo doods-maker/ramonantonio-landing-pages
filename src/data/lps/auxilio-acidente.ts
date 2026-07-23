@@ -70,6 +70,14 @@ export const auxilioAcidente: LandingData = {
     { titulo: 'CNIS · Extrato INSS', descricao: 'Histórico de contribuições previdenciárias' },
   ],
 
+  checklist: {
+    titulo: 'Prefere esta lista completa, para marcar com calma?',
+    texto:
+      'Enviamos pelo WhatsApp o checklist em PDF — com o passo a passo de como conseguir cada documento, inclusive o extrato CNIS pelo Meu INSS.',
+    mensagemWhats: 'Olá, vim pelo site e gostaria de receber o checklist de documentos do auxílio-acidente.',
+    botao: 'Receber o checklist',
+  },
+
   faqTitulo: 'Dúvidas sobre o auxílio-acidente',
   faq: [
     { pergunta: 'Qual a diferença entre auxílio-acidente e auxílio-doença?', resposta: 'O auxílio-doença (auxílio por incapacidade temporária) é pago enquanto você está temporariamente sem poder trabalhar. O auxílio-acidente é uma indenização para quem ficou com uma sequela permanente, mas voltou a trabalhar. São benefícios diferentes — e um pode vir depois do outro.' },

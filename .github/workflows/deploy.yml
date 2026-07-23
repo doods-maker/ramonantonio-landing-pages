@@ -27,9 +27,10 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftp
           local-dir: ./dist/
-          # A conta FTP deploy@ramonantonio.adv.br já tem como raiz o docroot do domínio
-          # (mesma conta do site institucional), por isso server-dir é "./" — os arquivos
-          # caem direto na raiz: ramonantonio.adv.br/bpc-loas, /salario-maternidade, etc.
+          # A raiz da conta FTP do deploy aponta para a subpasta /lp/ do docroot,
+          # por isso server-dir é "./" — os arquivos ficam acessíveis em
+          # ramonantonio.adv.br/lp/bpc-loas, /lp/salario-maternidade, etc.
+          # (o Astro usa base '/lp' em astro.config.mjs).
           server-dir: ./
           # state-name dedicado: este deploy só gerencia seus próprios arquivos, sem apagar
           # os do site institucional (que usa o state-name padrão).

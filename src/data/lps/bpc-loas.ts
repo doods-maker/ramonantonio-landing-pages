@@ -58,6 +58,14 @@ export const bpcLoas: LandingData = {
     { titulo: 'Laudo médico (se deficiência)', descricao: 'Atestando o impedimento e sua duração' },
   ],
 
+  checklist: {
+    titulo: 'Prefere esta lista completa, para marcar com calma?',
+    texto:
+      'Enviamos pelo WhatsApp o checklist em PDF — com orientações de como reunir cada documento, inclusive o CadÚnico no CRAS da sua cidade.',
+    mensagemWhats: 'Olá, vim pelo site e gostaria de receber o checklist de documentos do BPC/LOAS.',
+    botao: 'Receber o checklist',
+  },
+
   faqTitulo: 'Dúvidas sobre o BPC/LOAS',
   faq: [
     { pergunta: 'O que é o BPC/LOAS?', resposta: 'É um benefício assistencial previsto na Lei 8.742/93 (LOAS) que garante 1 salário mínimo mensal a idosos a partir de 65 anos e a pessoas com deficiência de baixa renda que não têm como prover o próprio sustento.' },

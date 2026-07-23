@@ -2,7 +2,9 @@
 
 Landing pages estáticas de captação de leads, especialização previdenciária e trabalhista.
 Tráfego pago (Meta Ads) + SEO regional (SC). Construído em **Astro** (saída 100% estática),
-hospedado no **HostGator** por **subpasta** do domínio institucional (`ramonantonio.adv.br/<slug>`).
+hospedado no **HostGator** na **subpasta `/lp/`** do domínio institucional
+(`ramonantonio.adv.br/lp/<slug>` — `base: '/lp'` no `astro.config.mjs`; preview local
+precisa servir o `dist/` sob o prefixo `/lp/`).
 Integração com o ramon-hub (Chatwoot fork, VPS) para recebimento de leads via `POST /public/api/v1/ramon_leads/<token>`.
 
 ## Stack
@@ -208,7 +210,7 @@ envia `dist/` por **FTP** para o HostGator diretamente em `public_html/`.
 
 ### Configuração FTP
 
-- **Destino:** `public_html/` (raiz do domínio). Cada LP fica em `public_html/<slug>/index.html`, acessível em `ramonantonio.adv.br/<slug>`. Não há `base` configurado no Astro nem subpasta intermediária `/lps/`.
+- **Destino:** subpasta `/lp/` do docroot. Cada LP fica acessível em `ramonantonio.adv.br/lp/<slug>` (confirmado no ar; `/​<slug>` sem o prefixo devolve 404). O Astro usa `base: '/lp'`; a conta FTP do deploy aponta para a subpasta correspondente com `server-dir: ./`.
 - **State name dedicado:** `.ftp-deploy-sync-state-landing.json` — evita colidir com o deploy do site institucional (`ramonantonio-site`).
 - **Secrets necessários (FTP):** `FTP_SERVER`, `FTP_USERNAME`, `FTP_PASSWORD`.
 - **Secrets necessários (build):** `PUBLIC_WHATSAPP_NUMERO`, `PUBLIC_META_PIXEL_ID`, `PUBLIC_LEADS_ENDPOINT` — injetados pelo workflow na etapa de build (ver `.github/workflows/deploy.yml`).
@@ -218,7 +220,7 @@ envia `dist/` por **FTP** para o HostGator diretamente em `public_html/`.
 **Checklist** em `docs/deploy-checklist.md`:
 
 - [ ] `npm test` passou (validação OAB + conteúdo).
-- [ ] Slugs confirmados (ex: `/bpc-loas`, `/salario-maternidade`).
+- [ ] Slugs confirmados (ex: `/lp/bpc-loas`, `/lp/salario-maternidade`).
 - [ ] `PUBLIC_META_PIXEL_ID` definido e testado.
 - [ ] `PUBLIC_WHATSAPP_NUMERO` definido e testado.
 - [ ] `PUBLIC_LEADS_ENDPOINT` confirmado (após deploy na intranet).

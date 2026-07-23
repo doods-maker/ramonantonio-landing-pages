@@ -70,6 +70,14 @@ export const salarioMaternidade: LandingData = {
     { titulo: 'Comprovante de residência', descricao: 'Atualizado, dos últimos 3 meses' },
   ],
 
+  checklist: {
+    titulo: 'Prefere esta lista completa, para marcar com calma?',
+    texto:
+      'Enviamos pelo WhatsApp o checklist em PDF — com o passo a passo de como conseguir cada documento, inclusive o extrato CNIS pelo Meu INSS.',
+    mensagemWhats: 'Olá, vim pelo site e gostaria de receber o checklist de documentos do salário-maternidade.',
+    botao: 'Receber o checklist',
+  },
+
   faqTitulo: 'Dúvidas sobre o salário-maternidade',
   faq: [
     { pergunta: 'Qual é o valor do salário-maternidade?', resposta: 'O valor depende da categoria da segurada. Para empregadas CLT, corresponde ao salário mensal. Para contribuintes individuais e facultativas, é calculado com base nas contribuições. Cada caso é analisado individualmente.' },
