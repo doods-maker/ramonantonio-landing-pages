@@ -11,9 +11,8 @@ export const quizAuxilioAcidente: QuizData = {
     'Olá! Que bom ter você aqui.',
     'Vou fazer algumas perguntas rápidas pra entender se o auxílio-acidente pode se aplicar ao seu caso. Leva menos de um minuto.',
   ],
-  perguntaNome: 'Pra começar, como você se chama?',
   perguntaTelefone: [
-    'Obrigado, {nome}! Estamos quase no fim.',
+    'Obrigado! Estamos quase no fim.',
     'Qual o seu WhatsApp com DDD? É por ele que nossa equipe fala com você.',
   ],
   perguntas: [

@@ -37,6 +37,10 @@ describe('montarResumo', () => {
     expect(texto).toContain('Nome: Maria');
     expect(texto).toContain('Sequela: Sim');
   });
+  it('sem nome, omite a linha Nome:', () => {
+    const texto = montarResumo('BPC', '', [responder('Renda', 'sim')], []);
+    expect(texto).not.toContain('Nome:');
+  });
   it('inclui pontos de atenção quando há dúvida', () => {
     const texto = montarResumo('BPC', 'João', [responder('Renda', 'limite')], ['Renda']);
     expect(texto).toContain('Ponto de atenção: Renda');

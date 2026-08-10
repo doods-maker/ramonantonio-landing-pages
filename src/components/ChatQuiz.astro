@@ -1,7 +1,7 @@
 ---
 /**
- * Chat de triagem conversacional (estilo WhatsApp) — máquina de passos:
- * boasVindas → nome → perguntas[i] → telefone → veredito.
+ * Chat de triagem conversacional (visual WhatsApp) — máquina de passos:
+ * boasVindas → perguntas[i] (só clique) → telefone → veredito.
  * Vanilla TS no <script>; sem dependência nova.
  */
 import type { QuizData } from '../data/quizzes/types';
@@ -33,7 +33,7 @@ const iniciais = quiz.atendente.nome
     <form class="chat-form" id="chat-form" novalidate hidden>
       <!-- honeypot: oculto para humanos -->
       <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" class="hp" />
-      <input class="chat-input" id="chat-input" name="valor" autocomplete="off" required aria-label="Sua resposta" />
+      <input class="chat-input" id="chat-input" name="valor" type="tel" autocomplete="tel" required aria-label="Seu WhatsApp com DDD" />
       <button type="submit" class="chat-send" aria-label="Enviar">➤</button>
     </form>
   </div>
@@ -68,10 +68,9 @@ const iniciais = quiz.atendente.nome
   const endpoint = import.meta.env.PUBLIC_LEADS_ENDPOINT as string | undefined;
   const whats = import.meta.env.PUBLIC_WHATSAPP_NUMERO as string | undefined;
 
-  let nome = '';
   let telefone = '';
   let perguntaIndex = 0;
-  let etapa: 'nome' | 'telefone' | null = null;
+  let aguardandoTelefone = false;
   const respostas: Resposta[] = [];
 
   function sleep(ms: number): Promise<void> {
@@ -94,13 +93,6 @@ const iniciais = quiz.atendente.nome
     addBolha('visitante', texto);
   }
 
-  /** Troca o placeholder {nome} pelo nome capturado; some limpo se ainda não houver nome. */
-  function interpolarNome(texto: string): string {
-    return nome
-      ? texto.replace('{nome}', () => nome)
-      : texto.replace('{nome}', '').replace(/\s{2,}/g, ' ').trim();
-  }
-
   async function atendenteFala(textos: string[]): Promise<void> {
     for (const texto of textos) {
       const digitando = document.createElement('div');
@@ -110,7 +102,7 @@ const iniciais = quiz.atendente.nome
       scrollAoFim();
       await sleep(900);
       digitando.remove();
-      addBolha('atendente', interpolarNome(texto));
+      addBolha('atendente', texto);
       await sleep(250);
     }
   }
@@ -133,19 +125,17 @@ const iniciais = quiz.atendente.nome
     scrollAoFim();
   }
 
-  function mostrarInput(tipo: 'text' | 'tel', placeholder: string, novaEtapa: 'nome' | 'telefone'): void {
-    input.type = tipo;
-    input.placeholder = placeholder;
-    input.autocomplete = tipo === 'tel' ? 'tel' : 'name';
+  function mostrarInputTelefone(): void {
+    input.placeholder = '(48) 9 0000-0000';
     input.value = '';
     form.hidden = false;
-    etapa = novaEtapa;
+    aguardandoTelefone = true;
     requestAnimationFrame(() => input.focus());
   }
 
   function esconderInput(): void {
     form.hidden = true;
-    etapa = null;
+    aguardandoTelefone = false;
   }
 
   function mostrarBotaoWhats(resumo: string): void {
@@ -173,7 +163,7 @@ const iniciais = quiz.atendente.nome
   async function proximaPergunta(): Promise<void> {
     if (perguntaIndex >= quiz.perguntas.length) {
       await atendenteFala(quiz.perguntaTelefone);
-      mostrarInput('tel', '(48) 9 0000-0000', 'telefone');
+      mostrarInputTelefone();
       return;
     }
     const pergunta = quiz.perguntas[perguntaIndex];
@@ -188,14 +178,16 @@ const iniciais = quiz.atendente.nome
 
   async function veredito(): Promise<void> {
     const { qualificado, duvidas } = avaliar(respostas);
-    const resumo = montarResumo(quiz.tese, nome, respostas, duvidas);
+    const resumo = montarResumo(quiz.tese, '', respostas, duvidas);
 
     // Disparado sem await: enviarLead não tem timeout próprio, e rede ruim/hub
     // pendurado não pode segurar o veredito visual (bolhas + botão de WhatsApp).
     if (endpoint) {
       const campanha = qualificado ? quiz.slug : `${quiz.slug}-desqualificado`;
+      // Sem etapa de nome no fluxo (decisão Eduardo 10/08): o hub identifica
+      // pelo telefone; o nome real vem na conversa do WhatsApp.
       void enviarLead(endpoint, {
-        nome, telefone, campanha, mensagem: resumo, website: honeypot.value,
+        nome: 'Lead triagem', telefone, campanha, mensagem: resumo, website: honeypot.value,
       // Pixel `Lead` só no qualificado: desqualificado entra no hub, mas não
       // ensina o algoritmo da Meta com lead ruim (decisão Eduardo 10/08).
       }).then((res) => { if (res.ok && qualificado) trackLead(); });
@@ -210,19 +202,12 @@ const iniciais = quiz.atendente.nome
     }
   }
 
-  async function aposNome(valor: string): Promise<void> {
-    nome = valor;
-    visitanteFala(nome);
-    esconderInput();
-    await proximaPergunta();
-  }
-
   async function aposTelefone(valor: string): Promise<void> {
     visitanteFala(valor);
     const normalizado = normalizarTelefone(valor);
     if (!normalizado) {
       await atendenteFala(['Esse número não parece completo. Confere o DDD?']);
-      mostrarInput('tel', '(48) 9 0000-0000', 'telefone');
+      mostrarInputTelefone();
       return;
     }
     telefone = normalizado;
@@ -234,32 +219,32 @@ const iniciais = quiz.atendente.nome
     e.preventDefault();
     if (honeypot.value) return; // bot: ignora silenciosamente
     const valor = input.value.trim();
-    if (!valor) return;
-    if (etapa === 'nome') void aposNome(valor);
-    else if (etapa === 'telefone') void aposTelefone(valor);
+    if (!valor || !aguardandoTelefone) return;
+    void aposTelefone(valor);
   });
 
   async function iniciar(): Promise<void> {
     await atendenteFala(quiz.boasVindas);
-    await atendenteFala([quiz.perguntaNome]);
-    mostrarInput('text', 'Digite seu nome', 'nome');
+    await proximaPergunta();
   }
 
   void iniciar();
 </script>
 
 <style>
+  /* Paleta WhatsApp (fixa, de propósito — não segue o tema bronze do site). */
   .chat-page {
     min-height: 100vh;
     display: flex;
     justify-content: center;
     padding: var(--space-6) clamp(1rem, 4vw, 2rem);
+    background: #f0f2f5;
   }
   .chat-card {
     width: 100%;
     max-width: 480px;
     height: 88vh;
-    background: var(--cream-100);
+    background: #ece5dd;
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-lg);
     display: flex;
@@ -271,30 +256,30 @@ const iniciais = quiz.atendente.nome
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 16px 20px;
-    background: var(--bronze-600);
-    color: var(--cream-100);
+    padding: 12px 16px;
+    background: #075e54;
+    color: #fff;
     flex-shrink: 0;
   }
   .chat-avatar {
-    width: 44px;
-    height: 44px;
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
-    background: var(--bronze-900);
-    color: var(--cream-100);
+    background: #128c7e;
+    color: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: var(--font-serif);
+    font-family: var(--font-whats);
     font-weight: 600;
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     flex-shrink: 0;
   }
-  .chat-header-nome { font-family: var(--font-sans); font-weight: 600; font-size: 1rem; }
+  .chat-header-nome { font-family: var(--font-whats); font-weight: 600; font-size: 1.02rem; }
   .chat-header-cargo {
-    font-family: var(--font-sans);
-    font-size: var(--text-xs);
-    opacity: 0.85;
+    font-family: var(--font-whats);
+    font-size: 0.78rem;
+    opacity: 0.9;
     display: flex;
     align-items: center;
     gap: 6px;
@@ -305,140 +290,149 @@ const iniciais = quiz.atendente.nome
     width: 7px;
     height: 7px;
     border-radius: 50%;
-    background: #4ade80;
+    background: #25d366;
     display: inline-block;
   }
 
   .chat-body {
     flex: 1;
     overflow-y: auto;
-    padding: 20px 16px;
+    padding: 18px 12px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
   }
 
   .bolha {
     max-width: 82%;
-    padding: 10px 14px;
-    border-radius: var(--radius-lg);
-    font-family: var(--font-sans);
-    font-size: var(--text-sm);
-    line-height: 1.5;
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-family: var(--font-whats);
+    font-size: 0.92rem;
+    line-height: 1.45;
     white-space: pre-line;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.12);
   }
   .bolha-atendente {
     align-self: flex-start;
-    background: var(--white);
-    color: var(--text-primary);
-    border-bottom-left-radius: 4px;
-    box-shadow: var(--shadow-sm);
+    background: #fff;
+    color: #111b21;
+    border-top-left-radius: 2px;
   }
   .bolha-visitante {
     align-self: flex-end;
-    background: color-mix(in srgb, var(--bronze-300) 35%, var(--white));
-    color: var(--text-primary);
-    border-bottom-right-radius: 4px;
+    background: #dcf8c6;
+    color: #111b21;
+    border-top-right-radius: 2px;
   }
 
-  .bolha-typing { display: flex; gap: 4px; align-items: center; padding: 13px 16px; }
+  .bolha-typing { display: flex; gap: 4px; align-items: center; padding: 12px 14px; }
   .bolha-typing span {
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: var(--bronze-400);
+    background: #8696a0;
     animation: piscar 1.2s infinite ease-in-out;
   }
   .bolha-typing span:nth-child(2) { animation-delay: 0.2s; }
   .bolha-typing span:nth-child(3) { animation-delay: 0.4s; }
   @keyframes piscar { 0%, 80%, 100% { opacity: 0.3; } 40% { opacity: 1; } }
 
-  .chip-row { display: flex; flex-wrap: wrap; gap: 8px; align-self: flex-start; max-width: 100%; }
+  .chip-row { display: flex; flex-wrap: wrap; gap: 8px; align-self: flex-start; max-width: 100%; padding: 2px 0 6px; }
   .chip {
-    font-family: var(--font-sans);
-    font-size: var(--text-sm);
-    color: var(--bronze-700);
-    background: var(--white);
-    border: 1px solid var(--border-soft);
-    border-radius: var(--radius-pill);
+    font-family: var(--font-whats);
+    font-size: 0.9rem;
+    color: #008069;
+    background: #fff;
+    border: 1px solid #d1d7db;
+    border-radius: 999px;
     padding: 9px 16px;
     cursor: pointer;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.08);
     transition: background 160ms, color 160ms;
   }
-  .chip:hover { background: var(--bronze-600); color: var(--cream-100); border-color: var(--bronze-600); }
+  .chip:hover, .chip:active { background: #008069; color: #fff; border-color: #008069; }
 
   .chat-cta {
     align-self: flex-start;
     display: inline-block;
     margin-top: 4px;
-    padding: 12px 20px;
-    border-radius: var(--radius-pill);
-    background: var(--bronze-600);
-    color: var(--cream-100);
-    font-family: var(--font-sans);
+    padding: 13px 22px;
+    border-radius: 999px;
+    background: #25d366;
+    color: #fff;
+    font-family: var(--font-whats);
     font-weight: 600;
-    font-size: var(--text-sm);
+    font-size: 0.95rem;
     text-align: center;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
   }
   .chat-cta-secundario {
-    background: transparent;
-    color: var(--bronze-600);
-    border: 1px solid var(--bronze-600);
-    text-decoration: underline;
+    background: #fff;
+    color: #008069;
+    border: 1px solid #008069;
+    box-shadow: none;
   }
 
   .chat-form[hidden] { display: none; }
   .chat-form {
     display: flex;
     gap: 8px;
-    padding: 12px 16px;
-    border-top: 1px solid var(--border-soft);
-    background: var(--white);
+    padding: 10px 12px;
+    background: #f0f2f5;
     flex-shrink: 0;
   }
   .chat-input {
     flex: 1;
     min-width: 0;
-    border: 1px solid var(--border-soft);
-    border-radius: var(--radius-pill);
+    border: none;
+    border-radius: 999px;
     padding: 12px 16px;
-    font-family: var(--font-sans);
+    font-family: var(--font-whats);
     font-size: var(--text-base);
-    background: var(--cream-100);
-    color: var(--text-primary);
+    background: #fff;
+    color: #111b21;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.08);
   }
-  .chat-input:focus { outline: none; border-color: var(--bronze-600); }
+  .chat-input:focus { outline: 2px solid #25d366; outline-offset: -1px; }
   .chat-send {
     width: 44px;
     height: 44px;
     border-radius: 50%;
     border: none;
-    background: var(--bronze-600);
-    color: var(--cream-100);
+    background: #25d366;
+    color: #fff;
     cursor: pointer;
     font-size: 1.1rem;
     flex-shrink: 0;
   }
-  .chat-send:hover { background: var(--bronze-700); }
+  .chat-send:hover { background: #128c7e; }
 
   .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 
   .chat-page-footer {
     max-width: 480px;
     margin: 0 auto;
-    padding: 0 clamp(1rem, 4vw, 2rem) var(--space-8);
+    padding: var(--space-4) clamp(1rem, 4vw, 2rem) var(--space-8);
     text-align: center;
-    font-family: var(--font-sans);
+    font-family: var(--font-whats);
     font-size: 0.75rem;
-    color: var(--text-secondary);
+    color: #54656f;
     line-height: 1.6;
+    background: #f0f2f5;
   }
   .chat-page-footer p { margin: 4px 0; }
-  .chat-page-footer a { color: var(--bronze-600); text-decoration: underline; }
-  .chat-page-disclaimer { opacity: 0.7; max-width: 42ch; margin: 8px auto 0; }
+  .chat-page-footer a { color: #008069; text-decoration: underline; }
+  .chat-page-disclaimer { opacity: 0.8; max-width: 42ch; margin: 8px auto 0; }
 
   @media (max-width: 768px) {
     .chat-page { padding: 0; }
     .chat-card { max-width: none; height: 100vh; height: 100dvh; border-radius: 0; }
   }
+</style>
+
+<style is:global>
+  /* WhatsApp usa a fonte do sistema — o chat segue junto pra parecer nativo. */
+  :root { --font-whats: -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
+  body:has(.chat-page) { background: #f0f2f5; margin: 0; }
 </style>

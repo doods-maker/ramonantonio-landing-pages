@@ -16,7 +16,7 @@ export function avaliar(respostas: Resposta[]): { qualificado: boolean; duvidas:
  * Resumo em texto puro pro hub (campo `mensagem`) e pro WhatsApp.
  * Formato:
  *   Triagem — <tese>
- *   Nome: <nome>
+ *   Nome: <nome>                        (só se houver nome)
  *   <rotuloResumo>: <rotulo da opção>   (uma linha por resposta)
  *   Ponto de atenção: <dúvida>          (se houver)
  */
@@ -25,7 +25,7 @@ export function montarResumo(
 ): string {
   const linhas = [
     `Triagem — ${tese}`,
-    `Nome: ${nome}`,
+    ...(nome ? [`Nome: ${nome}`] : []),
     ...respostas.map((r) => `${r.pergunta.rotuloResumo}: ${r.opcao.rotulo}`),
     ...duvidas.map((d) => `Ponto de atenção: ${d}`),
   ];

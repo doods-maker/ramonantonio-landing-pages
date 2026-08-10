@@ -11,9 +11,8 @@ export const quizBpcLoas: QuizData = {
     'Olá! Que bom ter você aqui.',
     'O BPC é um benefício de um salário mínimo para idosos 65+ e pessoas com deficiência em situação de baixa renda. Vou fazer algumas perguntas simples pra ver se ele pode se aplicar ao seu caso.',
   ],
-  perguntaNome: 'Pra começar, como você se chama?',
   perguntaTelefone: [
-    'Obrigado, {nome}! Já estamos quase terminando.',
+    'Obrigado! Já estamos quase terminando.',
     'Qual o seu WhatsApp com DDD? É por ele que nossa equipe fala com você.',
   ],
   perguntas: [

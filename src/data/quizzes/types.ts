@@ -27,11 +27,9 @@ export interface QuizData {
   seoDescription: string;
   /** Pessoa real da equipe (gate do Eduardo). */
   atendente: { nome: string; cargo: string };
-  /** Bolhas de abertura, antes de pedir o nome. */
+  /** Bolhas de abertura, antes da primeira pergunta. */
   boasVindas: string[];
-  /** Bolha que pede o nome. */
-  perguntaNome: string;
-  /** Bolhas que pedem o WhatsApp (antes do veredito). Use `{nome}` para interpolar o nome capturado. */
+  /** Bolhas que pedem o WhatsApp (antes do veredito). */
   perguntaTelefone: string[];
   perguntas: PerguntaQuiz[];
   /** Final aprovado: bolhas + rótulo do botão de WhatsApp. */
