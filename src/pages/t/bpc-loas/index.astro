@@ -1,0 +1,12 @@
+---
+import QuizLayout from '../../../layouts/QuizLayout.astro';
+import ChatQuiz from '../../../components/ChatQuiz.astro';
+import { quizBpcLoas } from '../../../data/quizzes/bpc-loas';
+---
+<QuizLayout
+  titulo={quizBpcLoas.seoTitle}
+  descricao={quizBpcLoas.seoDescription}
+  slug="bpc-loas"
+>
+  <ChatQuiz quiz={quizBpcLoas} />
+</QuizLayout>

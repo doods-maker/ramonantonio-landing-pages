@@ -240,6 +240,24 @@ para a subpasta FTP via cPanel.
 
 Mobile: a fonte foi ampliada em todas as LPs (≤768px) por legibilidade — importante no BPC (público idoso/PCD); e o hero do BPC e do salário-maternidade passa a usar a foto como **fundo** no celular (degradê escuro p/ legibilidade), em vez de ocultá-la.
 
+### Triagem conversacional (`/lp/t/<tese>`) — em rascunho, aguardando gates
+
+Três rotas de **chat de triagem** em produção:
+
+- **`/lp/t/auxilio-acidente`** — questionário conversacional de elegibilidade.
+- **`/lp/t/bpc-loas`** — triagem BPC/LOAS (perfil, renda familiar, CadÚnico).
+- **`/lp/t/salario-maternidade`** — triagem salário-maternidade (evento, prazo, qualidade de segurada).
+
+Componentes: `QuizLayout` + `ChatQuiz`. Dados: `quizAuxilioAcidente`, `quizBpcLoas`, `quizSalarioMaternidade` em `src/data/quizzes/`.
+
+**Referência:** `docs/superpowers/specs/2026-08-10-triagem-conversacional-design.md`
+
+**Gates pendentes:**
+- Copy (das 3 teses) aprovada pelo Eduardo.
+- Nome do atendente real (hoje placeholder "Equipe Ramon Antonio").
+- Número de WhatsApp definitivo.
+- Pixel Meta configurado.
+
 Cada nova LP reutiliza toda a infraestrutura deste repositório (basta um novo arquivo
 em `src/data/lps/` + página em `src/pages/`).
 

@@ -1,0 +1,12 @@
+---
+import QuizLayout from '../../../layouts/QuizLayout.astro';
+import ChatQuiz from '../../../components/ChatQuiz.astro';
+import { quizAuxilioAcidente } from '../../../data/quizzes/auxilio-acidente';
+---
+<QuizLayout
+  titulo={quizAuxilioAcidente.seoTitle}
+  descricao={quizAuxilioAcidente.seoDescription}
+  slug="auxilio-acidente"
+>
+  <ChatQuiz quiz={quizAuxilioAcidente} />
+</QuizLayout>
