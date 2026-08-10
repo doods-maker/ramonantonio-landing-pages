@@ -138,6 +138,7 @@ const iniciais = quiz.atendente.nome
 
   function esconderInput(): void {
     form.hidden = true;
+    etapa = null;
   }
 
   function mostrarBotaoWhats(resumo: string): void {
@@ -182,13 +183,13 @@ const iniciais = quiz.atendente.nome
     const { qualificado, duvidas } = avaliar(respostas);
     const resumo = montarResumo(quiz.tese, nome, respostas, duvidas);
 
-    // Falha de rede não pode bloquear o veredito visual — enviarLead nunca rejeita.
+    // Disparado sem await: enviarLead não tem timeout próprio, e rede ruim/hub
+    // pendurado não pode segurar o veredito visual (bolhas + botão de WhatsApp).
     if (endpoint) {
       const campanha = qualificado ? quiz.slug : `${quiz.slug}-desqualificado`;
-      const res = await enviarLead(endpoint, {
+      void enviarLead(endpoint, {
         nome, telefone, campanha, mensagem: resumo, website: honeypot.value,
-      });
-      if (res.ok) trackLead();
+      }).then((res) => { if (res.ok) trackLead(); });
     }
 
     if (qualificado) {
@@ -377,6 +378,7 @@ const iniciais = quiz.atendente.nome
     text-decoration: underline;
   }
 
+  .chat-form[hidden] { display: none; }
   .chat-form {
     display: flex;
     gap: 8px;
@@ -428,6 +430,6 @@ const iniciais = quiz.atendente.nome
 
   @media (max-width: 768px) {
     .chat-page { padding: 0; }
-    .chat-card { max-width: none; height: 100vh; border-radius: 0; }
+    .chat-card { max-width: none; height: 100vh; height: 100dvh; border-radius: 0; }
   }
 </style>
