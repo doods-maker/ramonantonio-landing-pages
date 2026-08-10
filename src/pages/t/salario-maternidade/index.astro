@@ -1,0 +1,12 @@
+---
+import QuizLayout from '../../../layouts/QuizLayout.astro';
+import ChatQuiz from '../../../components/ChatQuiz.astro';
+import { quizSalarioMaternidade } from '../../../data/quizzes/salario-maternidade';
+---
+<QuizLayout
+  titulo={quizSalarioMaternidade.seoTitle}
+  descricao={quizSalarioMaternidade.seoDescription}
+  slug="salario-maternidade"
+>
+  <ChatQuiz quiz={quizSalarioMaternidade} />
+</QuizLayout>
