@@ -6,7 +6,7 @@ export const quizSalarioMaternidade: QuizData = {
   seoTitle: 'Salário-maternidade — verifique seus direitos | Ramon Antonio Advogados',
   seoDescription:
     'Teve um filho, adotou ou está grávida? Responda algumas perguntas e veja se o salário-maternidade pode se aplicar ao seu caso.',
-  atendente: { nome: 'Equipe Ramon Antonio', cargo: 'Atendimento' }, // gate: Eduardo define a pessoa real
+  atendente: { nome: 'Eduardo', cargo: 'Atendimento' },
   boasVindas: [
     'Olá! Que bom ter você aqui.',
     'Vou fazer algumas perguntas rápidas pra entender se o salário-maternidade pode se aplicar ao seu caso. Leva menos de um minuto.',

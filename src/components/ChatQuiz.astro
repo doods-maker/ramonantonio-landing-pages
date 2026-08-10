@@ -97,7 +97,7 @@ const iniciais = quiz.atendente.nome
   /** Troca o placeholder {nome} pelo nome capturado; some limpo se ainda não houver nome. */
   function interpolarNome(texto: string): string {
     return nome
-      ? texto.replace('{nome}', nome)
+      ? texto.replace('{nome}', () => nome)
       : texto.replace('{nome}', '').replace(/\s{2,}/g, ' ').trim();
   }
 
@@ -196,7 +196,9 @@ const iniciais = quiz.atendente.nome
       const campanha = qualificado ? quiz.slug : `${quiz.slug}-desqualificado`;
       void enviarLead(endpoint, {
         nome, telefone, campanha, mensagem: resumo, website: honeypot.value,
-      }).then((res) => { if (res.ok) trackLead(); });
+      // Pixel `Lead` só no qualificado: desqualificado entra no hub, mas não
+      // ensina o algoritmo da Meta com lead ruim (decisão Eduardo 10/08).
+      }).then((res) => { if (res.ok && qualificado) trackLead(); });
     }
 
     if (qualificado) {

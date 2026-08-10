@@ -6,7 +6,7 @@ export const quizAuxilioAcidente: QuizData = {
   seoTitle: 'Auxílio-acidente — verifique seus direitos | Ramon Antonio Advogados',
   seoDescription:
     'Sofreu um acidente e ficou com sequela? Responda algumas perguntas e veja se o auxílio-acidente pode se aplicar ao seu caso.',
-  atendente: { nome: 'Equipe Ramon Antonio', cargo: 'Atendimento' }, // gate: Eduardo define a pessoa real
+  atendente: { nome: 'Eduardo', cargo: 'Atendimento' },
   boasVindas: [
     'Olá! Que bom ter você aqui.',
     'Vou fazer algumas perguntas rápidas pra entender se o auxílio-acidente pode se aplicar ao seu caso. Leva menos de um minuto.',

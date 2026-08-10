@@ -6,7 +6,7 @@ export const quizBpcLoas: QuizData = {
   seoTitle: 'BPC/LOAS — verifique seus direitos | Ramon Antonio Advogados',
   seoDescription:
     'Você tem 65 anos ou mais, ou é pessoa com deficiência, e a renda da família é baixa? Responda algumas perguntas e veja se o BPC pode se aplicar ao seu caso.',
-  atendente: { nome: 'Equipe Ramon Antonio', cargo: 'Atendimento' }, // gate: Eduardo define a pessoa real
+  atendente: { nome: 'Eduardo', cargo: 'Atendimento' },
   boasVindas: [
     'Olá! Que bom ter você aqui.',
     'O BPC é um benefício de um salário mínimo para idosos 65+ e pessoas com deficiência em situação de baixa renda. Vou fazer algumas perguntas simples pra ver se ele pode se aplicar ao seu caso.',
