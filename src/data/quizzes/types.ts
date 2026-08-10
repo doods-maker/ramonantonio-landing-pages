@@ -31,7 +31,7 @@ export interface QuizData {
   boasVindas: string[];
   /** Bolha que pede o nome. */
   perguntaNome: string;
-  /** Bolhas que pedem o WhatsApp (antes do veredito). */
+  /** Bolhas que pedem o WhatsApp (antes do veredito). Use `{nome}` para interpolar o nome capturado. */
   perguntaTelefone: string[];
   perguntas: PerguntaQuiz[];
   /** Final aprovado: bolhas + rótulo do botão de WhatsApp. */

@@ -45,6 +45,9 @@ describe('quiz bpc-loas', () => {
     expect(q.reprovado.linkLp).toBe('/lp/bpc-loas/');
     expect(q.reprovado.bolhas.length).toBeGreaterThan(0);
   });
+  it('perguntaTelefone usa o placeholder {nome}', () => {
+    expect(q.perguntaTelefone.join(' ')).toContain('{nome}');
+  });
   it('não viola OAB', () => {
     const texto = JSON.stringify(q);
     for (const re of PROIBIDO) expect(texto).not.toMatch(re);

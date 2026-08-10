@@ -13,7 +13,7 @@ export const quizBpcLoas: QuizData = {
   ],
   perguntaNome: 'Pra começar, como você se chama?',
   perguntaTelefone: [
-    'Obrigado! Já estamos quase terminando.',
+    'Obrigado, {nome}! Já estamos quase terminando.',
     'Qual o seu WhatsApp com DDD? É por ele que nossa equipe fala com você.',
   ],
   perguntas: [

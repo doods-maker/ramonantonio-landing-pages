@@ -50,6 +50,9 @@ describe('quiz salario-maternidade', () => {
     expect(texto).not.toMatch(/uma (única|so|só) contribuição/);
     expect(texto).toMatch(/qualidade de segurada/);
   });
+  it('perguntaTelefone usa o placeholder {nome}', () => {
+    expect(q.perguntaTelefone.join(' ')).toContain('{nome}');
+  });
   it('não viola OAB', () => {
     const texto = JSON.stringify(q);
     for (const re of PROIBIDO) expect(texto).not.toMatch(re);

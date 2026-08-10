@@ -33,7 +33,7 @@ const iniciais = quiz.atendente.nome
     <form class="chat-form" id="chat-form" novalidate hidden>
       <!-- honeypot: oculto para humanos -->
       <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" class="hp" />
-      <input class="chat-input" id="chat-input" name="valor" autocomplete="off" required />
+      <input class="chat-input" id="chat-input" name="valor" autocomplete="off" required aria-label="Sua resposta" />
       <button type="submit" class="chat-send" aria-label="Enviar">➤</button>
     </form>
   </div>
@@ -94,6 +94,13 @@ const iniciais = quiz.atendente.nome
     addBolha('visitante', texto);
   }
 
+  /** Troca o placeholder {nome} pelo nome capturado; some limpo se ainda não houver nome. */
+  function interpolarNome(texto: string): string {
+    return nome
+      ? texto.replace('{nome}', nome)
+      : texto.replace('{nome}', '').replace(/\s{2,}/g, ' ').trim();
+  }
+
   async function atendenteFala(textos: string[]): Promise<void> {
     for (const texto of textos) {
       const digitando = document.createElement('div');
@@ -103,7 +110,7 @@ const iniciais = quiz.atendente.nome
       scrollAoFim();
       await sleep(900);
       digitando.remove();
-      addBolha('atendente', texto);
+      addBolha('atendente', interpolarNome(texto));
       await sleep(250);
     }
   }

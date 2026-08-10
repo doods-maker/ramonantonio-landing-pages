@@ -13,7 +13,7 @@ export const quizAuxilioAcidente: QuizData = {
   ],
   perguntaNome: 'Pra começar, como você se chama?',
   perguntaTelefone: [
-    'Obrigado! Estamos quase no fim.',
+    'Obrigado, {nome}! Estamos quase no fim.',
     'Qual o seu WhatsApp com DDD? É por ele que nossa equipe fala com você.',
   ],
   perguntas: [
