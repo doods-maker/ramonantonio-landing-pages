@@ -9,7 +9,7 @@ interface Props { titulo: string; descricao: string; slug: string }
 const { titulo, descricao, slug } = Astro.props;
 const pixelId = import.meta.env.PUBLIC_META_PIXEL_ID;
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
-const canonical = new URL(`${base}/t/${slug}`, Astro.site).href;
+const canonical = new URL(`${base}/t/${slug}/`, Astro.site).href;
 ---
 <!doctype html>
 <html lang="pt-BR">
