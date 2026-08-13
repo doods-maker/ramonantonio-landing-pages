@@ -184,10 +184,19 @@ const iniciais = quiz.atendente.nome
     // pendurado não pode segurar o veredito visual (bolhas + botão de WhatsApp).
     if (endpoint) {
       const campanha = qualificado ? quiz.slug : `${quiz.slug}-desqualificado`;
+      const respostasPayload = respostas.map((r) => ({
+        id: r.pergunta.id,
+        pergunta: r.pergunta.rotuloResumo,
+        resposta: r.opcao.rotulo,
+        valor: r.opcao.valor,
+        ...(r.opcao.reprova ? { reprova: true } : {}),
+        ...(r.opcao.duvida ? { duvida: true } : {}),
+      }));
       // Sem etapa de nome no fluxo (decisão Eduardo 10/08): o hub identifica
       // pelo telefone; o nome real vem na conversa do WhatsApp.
       void enviarLead(endpoint, {
         nome: 'Lead triagem', telefone, campanha, mensagem: resumo, website: honeypot.value,
+        qualificado, duvidas, respostas: respostasPayload,
       // Pixel `Lead` só no qualificado: desqualificado entra no hub, mas não
       // ensina o algoritmo da Meta com lead ruim (decisão Eduardo 10/08).
       }).then((res) => { if (res.ok && qualificado) trackLead(); });
