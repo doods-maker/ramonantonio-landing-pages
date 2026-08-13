@@ -1,3 +1,12 @@
+export interface QuizRespostaPayload {
+  id: string;
+  pergunta: string;
+  resposta: string;
+  valor: string;
+  reprova?: boolean;
+  duvida?: boolean;
+}
+
 export interface LeadPayload {
   nome: string;
   telefone: string;
@@ -8,6 +17,10 @@ export interface LeadPayload {
   website?: string;
   /** Consentimento LGPD de marketing (opcional). */
   consent?: boolean;
+  /** Triagem estruturada do quiz-chat (opcional). */
+  qualificado?: boolean;
+  duvidas?: string[];
+  respostas?: QuizRespostaPayload[];
 }
 
 const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content'] as const;
@@ -85,6 +98,13 @@ export async function enviarLead(
         campanha: payload.campanha,
         mensagem: payload.mensagem?.trim() || undefined,
         ...(payload.consent ? { consent: true } : {}),
+        ...(payload.respostas?.length
+          ? {
+              respostas: payload.respostas,
+              duvidas: payload.duvidas ?? [],
+              qualificado: payload.qualificado === true,
+            }
+          : {}),
         ...capturarUtm(),
       }),
     });

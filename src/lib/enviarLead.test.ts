@@ -124,4 +124,37 @@ describe('enviarLead', () => {
     expect(res.ok).toBe(true);
     expect(fetchMock).not.toHaveBeenCalled();
   });
+
+  it('inclui a triagem estruturada no body quando há respostas', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true });
+    vi.stubGlobal('fetch', fetchMock);
+    await enviarLead('https://hub.test/public/api/v1/ramon_leads', {
+      nome: 'Lead triagem',
+      telefone: '5548999990000',
+      campanha: 't-auxilio-acidente',
+      qualificado: true,
+      duvidas: ['Renda familiar'],
+      respostas: [
+        { id: 'sequela', pergunta: 'Sequela permanente', resposta: 'Sim, tenho sequela', valor: 'sim' },
+      ],
+    });
+    const body = JSON.parse(fetchMock.mock.calls[0][1].body as string);
+    expect(body.qualificado).toBe(true);
+    expect(body.duvidas).toEqual(['Renda familiar']);
+    expect(body.respostas).toHaveLength(1);
+    expect(body.respostas[0].id).toBe('sequela');
+  });
+
+  it('omite os campos de triagem sem respostas', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true });
+    vi.stubGlobal('fetch', fetchMock);
+    await enviarLead('https://hub.test/public/api/v1/ramon_leads', {
+      nome: 'Fulano',
+      telefone: '5548999990000',
+      campanha: 'bpc-loas',
+    });
+    const body = JSON.parse(fetchMock.mock.calls[0][1].body as string);
+    expect(body.respostas).toBeUndefined();
+    expect(body.qualificado).toBeUndefined();
+  });
 });
