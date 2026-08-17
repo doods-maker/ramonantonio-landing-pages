@@ -67,6 +67,7 @@ const iniciais = quiz.atendente.nome
 
   const endpoint = import.meta.env.PUBLIC_LEADS_ENDPOINT as string | undefined;
   const whats = import.meta.env.PUBLIC_WHATSAPP_NUMERO as string | undefined;
+  const calcom = import.meta.env.PUBLIC_CALCOM_URL as string | undefined;
 
   let telefone = '';
   let perguntaIndex = 0;
@@ -148,7 +149,21 @@ const iniciais = quiz.atendente.nome
     a.textContent = quiz.aprovado.botaoWhats;
     a.addEventListener('click', () => trackContact());
     body.appendChild(a);
+    mostrarLinkAgendamento();
     scrollAoFim();
+  }
+
+  // Cal.com (decisão D14, 16/08): o lead escolhe dia e horário sozinho.
+  // Sem PUBLIC_CALCOM_URL o botão simplesmente não existe.
+  function mostrarLinkAgendamento(): void {
+    if (!calcom) return;
+    const a = document.createElement('a');
+    a.className = 'chat-cta chat-cta-secundario';
+    a.href = calcom;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    a.textContent = 'Prefere já marcar um horário? Agendar conversa';
+    body.appendChild(a);
   }
 
   function mostrarLinkReprovado(): void {

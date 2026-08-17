@@ -19,6 +19,7 @@ jobs:
           PUBLIC_WHATSAPP_NUMERO: ${{ secrets.PUBLIC_WHATSAPP_NUMERO }}
           PUBLIC_META_PIXEL_ID: ${{ secrets.PUBLIC_META_PIXEL_ID }}
           PUBLIC_LEADS_ENDPOINT: ${{ secrets.PUBLIC_LEADS_ENDPOINT }}
+          PUBLIC_CALCOM_URL: ${{ secrets.PUBLIC_CALCOM_URL }}
       - name: Deploy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.4.0
         with:

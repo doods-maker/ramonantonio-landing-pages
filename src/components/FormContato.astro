@@ -146,6 +146,7 @@ const politicaUrl = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/politica-de-
   import { trackLead, trackContact } from '../lib/tracking';
   const endpoint = import.meta.env.PUBLIC_LEADS_ENDPOINT;
   const whats = import.meta.env.PUBLIC_WHATSAPP_NUMERO;
+  const calcom = import.meta.env.PUBLIC_CALCOM_URL as string | undefined;
   document.querySelectorAll('[data-form-lead]').forEach((form) => {
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -192,6 +193,14 @@ const politicaUrl = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/politica-de-
       if (res.ok) {
         trackLead();
         msg.textContent = 'Recebemos seu contato! Em breve falaremos com você.';
+        if (calcom) {
+          const a = document.createElement('a');
+          a.href = calcom;
+          a.target = '_blank';
+          a.rel = 'noopener';
+          a.textContent = ' Prefere já marcar um horário? Agendar conversa.';
+          msg.appendChild(a);
+        }
         msg.className = 'form-msg ok';
         f.reset();
       } else {

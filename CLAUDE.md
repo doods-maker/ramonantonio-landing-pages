@@ -195,6 +195,9 @@ PUBLIC_WHATSAPP_NUMERO=55479999999999
 
 # Endpoint do ramon-hub com token de autenticação
 PUBLIC_LEADS_ENDPOINT=https://chat.ramonantonio.adv.br/public/api/v1/ramon_leads/seu-token-aqui
+
+# Cal.com — auto-agendamento do lead qualificado (vazio = botão não aparece)
+PUBLIC_CALCOM_URL=
 ```
 
 **Antes do deploy:**
@@ -213,7 +216,7 @@ envia `dist/` por **FTP** para o HostGator diretamente em `public_html/`.
 - **Destino:** subpasta `/lp/` do docroot. Cada LP fica acessível em `ramonantonio.adv.br/lp/<slug>` (confirmado no ar; `/​<slug>` sem o prefixo devolve 404). O Astro usa `base: '/lp'`; a conta FTP do deploy aponta para a subpasta correspondente com `server-dir: ./`.
 - **State name dedicado:** `.ftp-deploy-sync-state-landing.json` — evita colidir com o deploy do site institucional (`ramonantonio-site`).
 - **Secrets necessários (FTP):** `FTP_SERVER`, `FTP_USERNAME`, `FTP_PASSWORD`.
-- **Secrets necessários (build):** `PUBLIC_WHATSAPP_NUMERO`, `PUBLIC_META_PIXEL_ID`, `PUBLIC_LEADS_ENDPOINT` — injetados pelo workflow na etapa de build (ver `.github/workflows/deploy.yml`).
+- **Secrets necessários (build):** `PUBLIC_WHATSAPP_NUMERO`, `PUBLIC_META_PIXEL_ID`, `PUBLIC_LEADS_ENDPOINT`, `PUBLIC_CALCOM_URL` (opcional) — injetados pelo workflow na etapa de build (ver `.github/workflows/deploy.yml`).
 
 ### Validação pré-deploy
 
