@@ -93,9 +93,10 @@ export const auxilioAcidente: LandingData = {
   ],
 
   sobreTexto:
-    'Especialistas em Direito Previdenciário, com sede em Tubarão/SC e atuação em todo o estado de Santa Catarina. Você acompanha cada etapa do processo com transparência.',
+    'Especialistas em Direito Previdenciário, com sede em Tubarão/SC e atendimento em todo o Brasil. Você acompanha cada etapa do processo com transparência.',
+  // Sem "+X anos"/"+10.000" (trava OAB da skill comercial-nova-lp; decisão do Eduardo 03/10/2026).
   stats: [
-    { value: '+20', label: 'anos de atuação' },
-    { value: '+10.000', label: 'benefícios conquistados' },
+    { value: 'Tubarão', label: 'sede no Sul de SC' },
+    { value: 'Brasil', label: 'atendimento em todo o país' },
   ],
 };

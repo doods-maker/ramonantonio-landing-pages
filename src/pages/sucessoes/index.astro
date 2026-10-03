@@ -9,12 +9,12 @@ import SecaoContato from '../../components/SecaoContato.astro';
 import FAQ from '../../components/FAQ.astro';
 import Stat from '../../components/Stat.astro';
 import FloatingWhats from '../../components/FloatingWhats.astro';
-import { trabalhistaGeral as d } from '../../data/lps/trabalhista-geral';
+import { sucessoes as d } from '../../data/lps/sucessoes';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const nav = [
   { href: '#o-que-e', label: 'O que é' },
-  { href: '#quem-tem-direito', label: 'O que cobrar' },
+  { href: '#quem-tem-direito', label: 'Caminhos' },
   { href: '#documentos', label: 'Documentos' },
   { href: '#faq', label: 'FAQ' },
 ];
@@ -25,7 +25,7 @@ const nav = [
   <!-- HERO — dark, com foto -->
   <section class="hero">
     <div class="hero-photo">
-      <img class="hero-photo-img" src={`${base}/images/hero-trabalhista-geral.webp`} alt="Trabalhador em retrato preto e branco, ao lado de uma bancada de trabalho" width="864" height="1184" />
+      <img class="hero-photo-img" src={`${base}/images/hero-sucessoes.webp`} alt="Irmãos adultos à mesa, em retrato preto e branco, olhando documentos e um álbum de família" width="864" height="1184" />
       <div class="hero-photo-fade"></div>
     </div>
     <div class="wrap hero-inner">
@@ -46,7 +46,7 @@ const nav = [
   <section id="o-que-e" class="oque">
     <div class="wrap two-col oque-grid">
       <div>
-        <Eyebrow label="RECLAMAÇÃO TRABALHISTA" />
+        <Eyebrow label="INVENTÁRIO E HERANÇA" />
         {d.oQueEQuote && <p class="oque-quote">“{d.oQueEQuote}”</p>}
       </div>
       <div class="oque-body">
@@ -57,7 +57,7 @@ const nav = [
     </div>
   </section>
 
-  <!-- O QUE A LEI DIZ — destaque legal (prescrição) -->
+  <!-- O QUE A LEI DIZ — destaque legal (prazo do inventário) -->
   {d.destaqueLegal && (
     <section class="destaque">
       <div class="wrap destaque-inner">
@@ -69,11 +69,11 @@ const nav = [
     </section>
   )}
 
-  <!-- O QUE COBRAR — white, cards numerados -->
+  <!-- CAMINHOS — white, cards numerados -->
   <section id="quem-tem-direito" class="req">
     <div class="wrap">
       <div class="req-head">
-        <Eyebrow label="DIREITOS" />
+        <Eyebrow label="CAMINHOS" />
         <h2 class="section-h2">{d.requisitosTitulo}</h2>
       </div>
       <div class="req-list">
@@ -181,7 +181,6 @@ const nav = [
   }
   .oque-p-lead { font-size: var(--text-lead); color: var(--text-primary); margin-bottom: 18px; }
   .oque-p :global(strong) { color: var(--text-primary); }
-  .oque-p :global(a) { color: var(--color-primary); text-decoration: underline; text-underline-offset: 3px; }
 
   /* DESTAQUE legal */
   .destaque { background: var(--bronze-900); padding: var(--space-8) 0; }

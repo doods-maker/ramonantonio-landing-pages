@@ -9,12 +9,12 @@ import SecaoContato from '../../components/SecaoContato.astro';
 import FAQ from '../../components/FAQ.astro';
 import Stat from '../../components/Stat.astro';
 import FloatingWhats from '../../components/FloatingWhats.astro';
-import { trabalhistaGeral as d } from '../../data/lps/trabalhista-geral';
+import { verbasRescisorias as d } from '../../data/lps/verbas-rescisorias';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const nav = [
-  { href: '#o-que-e', label: 'O que é' },
-  { href: '#quem-tem-direito', label: 'O que cobrar' },
+  { href: '#o-que-e', label: 'O que são' },
+  { href: '#quem-tem-direito', label: 'Tipos de saída' },
   { href: '#documentos', label: 'Documentos' },
   { href: '#faq', label: 'FAQ' },
 ];
@@ -25,7 +25,7 @@ const nav = [
   <!-- HERO — dark, com foto -->
   <section class="hero">
     <div class="hero-photo">
-      <img class="hero-photo-img" src={`${base}/images/hero-trabalhista-geral.webp`} alt="Trabalhador em retrato preto e branco, ao lado de uma bancada de trabalho" width="864" height="1184" />
+      <img class="hero-photo-img" src={`${base}/images/hero-verbas-rescisorias.webp`} alt="Trabalhador em retrato preto e branco deixando a fábrica com uma caixa de pertences" width="864" height="1184" />
       <div class="hero-photo-fade"></div>
     </div>
     <div class="wrap hero-inner">
@@ -46,7 +46,7 @@ const nav = [
   <section id="o-que-e" class="oque">
     <div class="wrap two-col oque-grid">
       <div>
-        <Eyebrow label="RECLAMAÇÃO TRABALHISTA" />
+        <Eyebrow label="VERBAS RESCISÓRIAS" />
         {d.oQueEQuote && <p class="oque-quote">“{d.oQueEQuote}”</p>}
       </div>
       <div class="oque-body">
@@ -57,11 +57,11 @@ const nav = [
     </div>
   </section>
 
-  <!-- O QUE A LEI DIZ — destaque legal (prescrição) -->
+  <!-- O QUE A LEI DIZ — destaque legal (prazo de pagamento) -->
   {d.destaqueLegal && (
     <section class="destaque">
       <div class="wrap destaque-inner">
-        <Eyebrow label="PRAZOS" onDark />
+        <Eyebrow label="PRAZO DE PAGAMENTO" onDark />
         <h2 class="section-h2 section-h2-light destaque-h2">{d.destaqueLegal.titulo}</h2>
         <p class="destaque-txt" set:html={d.destaqueLegal.texto}></p>
         {d.destaqueLegal.fonte && <p class="destaque-fonte">{d.destaqueLegal.fonte}</p>}
@@ -69,11 +69,11 @@ const nav = [
     </section>
   )}
 
-  <!-- O QUE COBRAR — white, cards numerados -->
+  <!-- TIPOS DE SAÍDA — white, cards numerados -->
   <section id="quem-tem-direito" class="req">
     <div class="wrap">
       <div class="req-head">
-        <Eyebrow label="DIREITOS" />
+        <Eyebrow label="TIPOS DE SAÍDA" />
         <h2 class="section-h2">{d.requisitosTitulo}</h2>
       </div>
       <div class="req-list">

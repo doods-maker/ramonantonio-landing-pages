@@ -9,12 +9,12 @@ import SecaoContato from '../../components/SecaoContato.astro';
 import FAQ from '../../components/FAQ.astro';
 import Stat from '../../components/Stat.astro';
 import FloatingWhats from '../../components/FloatingWhats.astro';
-import { trabalhistaGeral as d } from '../../data/lps/trabalhista-geral';
+import { aposentadoria as d } from '../../data/lps/aposentadoria';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const nav = [
   { href: '#o-que-e', label: 'O que é' },
-  { href: '#quem-tem-direito', label: 'O que cobrar' },
+  { href: '#quem-tem-direito', label: 'Quem tem direito' },
   { href: '#documentos', label: 'Documentos' },
   { href: '#faq', label: 'FAQ' },
 ];
@@ -25,7 +25,7 @@ const nav = [
   <!-- HERO — dark, com foto -->
   <section class="hero">
     <div class="hero-photo">
-      <img class="hero-photo-img" src={`${base}/images/hero-trabalhista-geral.webp`} alt="Trabalhador em retrato preto e branco, ao lado de uma bancada de trabalho" width="864" height="1184" />
+      <img class="hero-photo-img" src={`${base}/images/hero-aposentadoria.webp`} alt="Trabalhador de cerca de 60 anos na porta de casa, em retrato preto e branco" width="864" height="1184" />
       <div class="hero-photo-fade"></div>
     </div>
     <div class="wrap hero-inner">
@@ -46,7 +46,7 @@ const nav = [
   <section id="o-que-e" class="oque">
     <div class="wrap two-col oque-grid">
       <div>
-        <Eyebrow label="RECLAMAÇÃO TRABALHISTA" />
+        <Eyebrow label="O BENEFÍCIO" />
         {d.oQueEQuote && <p class="oque-quote">“{d.oQueEQuote}”</p>}
       </div>
       <div class="oque-body">
@@ -57,11 +57,11 @@ const nav = [
     </div>
   </section>
 
-  <!-- O QUE A LEI DIZ — destaque legal (prescrição) -->
+  <!-- O QUE A LEI DIZ — destaque legal (carência) -->
   {d.destaqueLegal && (
     <section class="destaque">
       <div class="wrap destaque-inner">
-        <Eyebrow label="PRAZOS" onDark />
+        <Eyebrow label="O QUE A LEI DIZ" onDark />
         <h2 class="section-h2 section-h2-light destaque-h2">{d.destaqueLegal.titulo}</h2>
         <p class="destaque-txt" set:html={d.destaqueLegal.texto}></p>
         {d.destaqueLegal.fonte && <p class="destaque-fonte">{d.destaqueLegal.fonte}</p>}
@@ -69,11 +69,11 @@ const nav = [
     </section>
   )}
 
-  <!-- O QUE COBRAR — white, cards numerados -->
+  <!-- QUEM TEM DIREITO — white, cards numerados -->
   <section id="quem-tem-direito" class="req">
     <div class="wrap">
       <div class="req-head">
-        <Eyebrow label="DIREITOS" />
+        <Eyebrow label="REQUISITOS" />
         <h2 class="section-h2">{d.requisitosTitulo}</h2>
       </div>
       <div class="req-list">
@@ -82,7 +82,7 @@ const nav = [
             <div class="req-num-wrap">
               <span class="req-num">{String(i + 1).padStart(2, '0')}</span>
               <div class="req-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
               </div>
             </div>
             <div>
@@ -181,9 +181,8 @@ const nav = [
   }
   .oque-p-lead { font-size: var(--text-lead); color: var(--text-primary); margin-bottom: 18px; }
   .oque-p :global(strong) { color: var(--text-primary); }
-  .oque-p :global(a) { color: var(--color-primary); text-decoration: underline; text-underline-offset: 3px; }
 
-  /* DESTAQUE legal */
+  /* O QUE A LEI DIZ — destaque legal */
   .destaque { background: var(--bronze-900); padding: var(--space-8) 0; }
   .destaque-inner { max-width: 880px; }
   .destaque-h2 { margin: 14px 0 16px; }
