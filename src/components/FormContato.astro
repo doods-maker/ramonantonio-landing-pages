@@ -10,7 +10,8 @@ interface Props {
   cardBg?: 'cream' | 'white';
 }
 const { campanha, cardBg = 'white' } = Astro.props;
-const politicaUrl = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/politica-de-privacidade/`;
+// Política única do escritório: mora no site institucional (fora do /lp).
+const politicaUrl = '/politica-de-privacidade/';
 ---
 <div class:list={['form-card', cardBg === 'cream' ? 'card-cream' : 'card-white']}>
   <h3 class="form-title">Fale com o escritório</h3>
