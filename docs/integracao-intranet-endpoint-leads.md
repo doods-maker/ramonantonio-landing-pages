@@ -25,7 +25,7 @@ A landing page estática (Astro) **não mantém estado**; por isso envia leads p
 ### Fluxo
 
 1. Landing page (Astro) coleta dados: `nome`, `telefone`, `campanha`, `mensagem` (opcional), e um honeypot (`website`).
-2. Faz `fetch POST` para `https://chat.ramonantonio.adv.br/public/api/v1/ramon_leads/<token>`.
+2. Faz `fetch POST` para `https://chat.ramonantonio.adv.br/public/api/v1/ramon_leads` com o token no header `X-Capture-Token`. Desde 18/10/2026 o hub **recusa token na URL**; o `enviarLead` separa sozinho o token do `PUBLIC_LEADS_ENDPOINT` antigo.
 3. O endpoint valida:
    - Nome não vazio.
    - Telefone em formato E.164 sem `+` (apenas dígitos, 12–13 caracteres).
@@ -43,7 +43,8 @@ A landing page estática (Astro) **não mantém estado**; por isso envia leads p
 O endpoint é **público** e **requer autenticação via token**:
 
 ```
-POST https://chat.ramonantonio.adv.br/public/api/v1/ramon_leads/<token>
+POST https://chat.ramonantonio.adv.br/public/api/v1/ramon_leads
+X-Capture-Token: <token>
 ```
 
 Onde:
@@ -100,7 +101,8 @@ Se qualquer validação falhar, retorna `400` com detalhes opcionais no corpo.
 ## 4. Exemplo de requisição (curl)
 
 ```bash
-curl -i -X POST https://chat.ramonantonio.adv.br/public/api/v1/ramon_leads/seu-token-aqui \
+curl -i -X POST https://chat.ramonantonio.adv.br/public/api/v1/ramon_leads \
+  -H 'X-Capture-Token: seu-token-aqui' \
   -H 'Content-Type: application/json' \
   -d '{
     "nome": "Maria Santos",
@@ -214,7 +216,8 @@ export async function enviarLead(dados: {
 Antes de fazer deploy das landing pages, valide que o endpoint está pronto:
 
 ```bash
-curl -i -X POST https://chat.ramonantonio.adv.br/public/api/v1/ramon_leads/seu-token-aqui \
+curl -i -X POST https://chat.ramonantonio.adv.br/public/api/v1/ramon_leads \
+  -H 'X-Capture-Token: seu-token-aqui' \
   -H 'Content-Type: application/json' \
   -d '{"nome":"Teste","telefone":"5547999999999","campanha":"teste"}'
 ```

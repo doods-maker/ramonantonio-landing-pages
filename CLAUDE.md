@@ -5,7 +5,7 @@ Tráfego pago (Meta Ads) + SEO regional (SC). Construído em **Astro** (saída 1
 hospedado no **HostGator** na **subpasta `/lp/`** do domínio institucional
 (`ramonantonio.adv.br/lp/<slug>` — `base: '/lp'` no `astro.config.mjs`; preview local
 precisa servir o `dist/` sob o prefixo `/lp/`).
-Integração com o ramon-hub (Chatwoot fork, VPS) para recebimento de leads via `POST /public/api/v1/ramon_leads/<token>`.
+Integração com o ramon-hub (Chatwoot fork, VPS) para recebimento de leads via `POST /public/api/v1/ramon_leads` (token no header `X-Capture-Token`).
 
 ## Stack
 
@@ -155,7 +155,7 @@ Commit é bloqueado se testes falharem (CI/CD).
 
 ## Integração com o ramon-hub
 
-O ramon-hub (fork do Chatwoot rodando em VPS) expõe um endpoint **`POST /public/api/v1/ramon_leads/<token>`**
+O ramon-hub (fork do Chatwoot rodando em VPS) expõe um endpoint **`POST /public/api/v1/ramon_leads`** (token no header `X-Capture-Token`; desde 18/10/2026 o token na URL é recusado)
 que recebe as submissões do formulário e cria leads na etapa "Novo" do funil Kanban.
 Detalhes em `docs/integracao-intranet-endpoint-leads.md`.
 
@@ -164,7 +164,7 @@ Detalhes em `docs/integracao-intranet-endpoint-leads.md`.
 ```
 [FormLead (landing page)]
          ↓ POST JSON (nome, telefone, campanha, website honeypot)
-[Endpoint /public/api/v1/ramon_leads/<token> no ramon-hub (VPS)]
+[Endpoint /public/api/v1/ramon_leads no ramon-hub (VPS), header X-Capture-Token]
          ↓ validação, honeypot, token auth
 [Lead na etapa "Novo" do funil Kanban]
 ```
